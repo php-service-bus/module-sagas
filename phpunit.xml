@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- https://phpunit.de/manual/current/en/appendixes.configuration.html -->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/7.0/phpunit.xsd"
+         backupGlobals="false"
+         colors="true"
+         bootstrap="vendor/autoload.php"
+         failOnRisky="true"
+         failOnWarning="true"
+         beStrictAboutTestsThatDoNotTestAnything="false">
+    <php>
+        <ini name="error_reporting" value="-1"/>
+        <env name="TEST_POSTGRES_DSN" value="pgsql://postgres:123456789@localhost:5432/test"/>
+    </php>
+
+    <testsuites>
+
+        <testsuite name="Common component">
+            <directory>./vendor/php-service-bus/common/tests</directory>
+        </testsuite>
+
+        <testsuite name="Annotations reade component">
+            <directory>./vendor/php-service-bus/annotations-reader/tests</directory>
+        </testsuite>
+
+        <testsuite name="Messages router component">
+            <directory>./vendor/php-service-bus/messages-router/tests</directory>
+        </testsuite>
+
+        <testsuite name="Common storage component">
+            <directory>./vendor/php-service-bus/storage-common/tests</directory>
+        </testsuite>
+
+        <testsuite name="SQL storage component">
+            <directory>./vendor/php-service-bus/storage-sql/tests</directory>
+        </testsuite>
+
+        <testsuite name="Sagas component">
+            <directory>./vendor/php-service-bus/sagas/tests</directory>
+        </testsuite>
+
+        <testsuite name="Sagas module">
+            <directory>./tests</directory>
+        </testsuite>
+
+    </testsuites>
+
+    <filter>
+        <whitelist>
+            <directory>./</directory>
+            <exclude>
+                <directory>./tests</directory>
+                <directory>./vendor</directory>
+            </exclude>
+        </whitelist>
+    </filter>
+</phpunit>

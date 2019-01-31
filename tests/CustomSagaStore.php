@@ -1,0 +1,57 @@
+<?php
+
+/**
+ * Sagas support module
+ *
+ * @author  Maksim Masiukevich <dev@async-php.com>
+ * @license MIT
+ * @license https://opensource.org/licenses/MIT
+ */
+
+declare(strict_types = 1);
+
+namespace ServiceBus\Sagas\Module\Tests;
+
+use Amp\Promise;
+use Amp\Success;
+use ServiceBus\Sagas\Saga;
+use ServiceBus\Sagas\SagaId;
+use ServiceBus\Sagas\Store\SagasStore;
+
+/**
+ *
+ */
+final class CustomSagaStore implements SagasStore
+{
+    /**
+     * @inheritDoc
+     */
+    public function obtain(SagaId $id): Promise
+    {
+        return new Success();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function save(Saga $saga): Promise
+    {
+        return new Success();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function update(Saga $saga): Promise
+    {
+        return new Success();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function remove(SagaId $id): Promise
+    {
+        return new Success();
+    }
+}
