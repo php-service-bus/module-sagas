@@ -85,7 +85,7 @@ final class ExampleSagaId extends SagaId
 
 /**
  * @SagaHeader(
- *     idClass="Desperado\ServiceBus\ExampleSagaId",
+ *     idClass="\ExampleSagaId",
  *     expireDateModifier="+1 year",
  *     containingIdProperty="operationId"
  * )
