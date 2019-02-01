@@ -1,6 +1,6 @@
 {
   "name": "php-service-bus/module-sagas",
-  "description": "Sagas support module",
+  "description": "Saga pattern implementation module",
   "type": "library",
   "keywords": ["cqrs", "event-sourcing", "async-php", "command-bus", "messaging"],
   "authors": [
@@ -39,7 +39,7 @@
     "symfony/dependency-injection": "^v4.2",
     "doctrine/dbal": "^v2.6",
     "phpunit/phpunit": "^7",
-    "vimeo/psalm": "^3"
+    "vimeo/psalm": "dev-master"
   },
   "prefer-stable": true,
   "minimum-stability": "dev",

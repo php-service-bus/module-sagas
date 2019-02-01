@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Sagas support module
+ * Saga pattern implementation module
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT

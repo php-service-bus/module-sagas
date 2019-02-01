@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Sagas support module
+ * Saga pattern implementation module
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -117,7 +117,9 @@ final class SagaModule implements ServiceBusModule
     }
 
     /**
-     *All sagas from the specified directories will be registered automatically
+     * All sagas from the specified directories will be registered automatically
+     *
+     * @noinspection PhpDocMissingThrowsInspection
      *
      * Note: All files containing user-defined functions must be excluded
      * Note: Increases start time because of the need to scan files
@@ -142,6 +144,7 @@ final class SagaModule implements ServiceBusModule
                 continue;
             }
 
+            /** @noinspection PhpUnhandledExceptionInspection */
             $class = extractNamespaceFromFile($filePath);
 
             if(null !== $class && true === \is_a($class, Saga::class, true))
@@ -209,6 +212,8 @@ final class SagaModule implements ServiceBusModule
     }
 
     /**
+     * @noinspection PhpDocMissingThrowsInspection
+     *
      * @param ContainerBuilder $containerBuilder
      *
      * @return void
@@ -223,6 +228,7 @@ final class SagaModule implements ServiceBusModule
             );
         }
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $routerConfiguratorDefinition = $containerBuilder->getDefinition(ChainRouterConfigurator::class);
 
         if(false === $containerBuilder->hasDefinition(Router::class))
@@ -230,6 +236,7 @@ final class SagaModule implements ServiceBusModule
             $containerBuilder->addDefinitions([Router::class => new Definition(Router::class)]);
         }
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $routerDefinition = $containerBuilder->getDefinition(Router::class);
         $routerDefinition->setConfigurator(
             [new Reference(ChainRouterConfigurator::class), 'configure']
@@ -244,6 +251,7 @@ final class SagaModule implements ServiceBusModule
 
         $containerBuilder->addDefinitions([SagaMessagesRouterConfigurator::class => $sagaRoutingConfiguratorDefinition]);
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $routerConfiguratorDefinition->addMethodCall(
             'addConfigurator',
             [new Reference(SagaMessagesRouterConfigurator::class)]
