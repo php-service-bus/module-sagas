@@ -3,17 +3,18 @@
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/php-service-bus/module-sagas/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/php-service-bus/module-sagas/?branch=master)
 
 ## Table of contents
-* [What is Saga?]()
-* [Field of use]()
-* [Implementation features]()
-* [Caveats]()
-* [Configuration]()
-* [Lifecycle]()
-* [Creation]()
-* [Example]()
+* [What is Saga?](https://github.com/php-service-bus/module-sagas#what-is-saga)
+* [Field of use](https://github.com/php-service-bus/module-sagas#field-of-use)
+* [Implementation features](https://github.com/php-service-bus/module-sagas#implementation-features)
+* [Caveats](https://github.com/php-service-bus/module-sagas#caveats)
+* [Installation](https://github.com/php-service-bus/module-sagas#installation)
+* [Configuration](https://github.com/php-service-bus/module-sagas#saga-configuration)
+* [Lifecycle](https://github.com/php-service-bus/module-sagas#lifecycle)
+* [Creation](https://github.com/php-service-bus/module-sagas#creation)
+* [Example](https://github.com/php-service-bus/module-sagas#example)
 
 #### What is Saga?
-Saga may be interpreted as any documented business process which consists of steps. Speaking technically, Saga is an Event Listener which listens to some [event](https://github.com/mmasiukevich/service-bus/blob/master/doc/en_messages.md#event) and performs an action based on that event. A good example is a flowchart with a decision symbol.
+Saga may be interpreted as any documented business process which consists of steps. Speaking technically, Saga is an Event Listener which listens to some [event](https://github.com/php-service-bus/common/blob/master/src/Messages/Event.php) and performs an action based on that event. A good example is a flowchart with a decision symbol.
 
 There are synchronous, asynchronous and mixed sagas (where some steps may be performed synchronously and some asynchronously). From personal experience only asynchronous sagas are worth implementing.
 
@@ -31,8 +32,23 @@ Any non-closed saga may be triggered starting from any of saga's steps if a corr
 The more sagas (and steps within them) you have the more documentation you need for them. Single saga may trigger other sagas heavily increasing complexity of business processes.
 [Message based architecture](https://www.enterpriseintegrationpatterns.com/patterns/messaging/Messaging.html) is very difficult to understand at the beginning (especially after "common" PHP programming) and requires a lot of responsibility.
 
-#### Configuration
-Sagas are configures through annotations [@SagaHeader]() and [@SagaEventListener]().
+#### Installation
+```bash
+composer req php-service-bus/module-sagas
+composer req php-service-bus/storage-sql
+```
+
+```php
+$module = SagaModule::withSqlStorage(DatabaseAdapter::class)
+    ->enableAutoImportSagas([__DIR__ . '/src']);
+```
+Enable module:
+```php
+$bootstrap->applyModules($module);
+```
+
+#### Saga configuration
+Sagas are configures through annotations [@SagaHeader](https://github.com/php-service-bus/sagas/blob/master/src/Configuration/Annotations/SagaHeader.php) and [@SagaEventListener](https://github.com/php-service-bus/sagas/blob/master/src/Configuration/Annotations/SagaEventListener.php).
 Parameters:
  - ```idClass```: Saga identifier class namespace;
  - ```expireDateModifier```: Saga expiry interval;
@@ -42,22 +58,22 @@ Parameters:
  Each event listener should be named like ```on{EventName}```, where *on* is a generic prefix and *{EventName}* is short class name.
 
  #### Lifecycle
- Saga execution starts on call of method [start()](), which will be called automatically (see example below). There are following methods (protected) available inside Saga instance:
-- [fire()](): Dispatches a command;
-- [raise()](): Dispatches an event;
-- [makeCompleted()](): Closes saga marking it as successfully finished.
-- [makeFailed()](): Closes saga marking it as failed.
+ Saga execution starts on call of method [start()](https://github.com/php-service-bus/sagas/blob/master/src/Saga.php#L137), which will be called automatically (see example below). There are following methods (protected) available inside Saga instance:
+- [fire()](https://github.com/php-service-bus/sagas/blob/master/src/Saga.php#L205): Dispatches a command;
+- [raise()](https://github.com/php-service-bus/sagas/blob/master/src/Saga.php#L188): Dispatches an event;
+- [makeCompleted()](https://github.com/php-service-bus/sagas/blob/master/src/Saga.php#L223): Closes saga marking it as successfully finished.
+- [makeFailed()](https://github.com/php-service-bus/sagas/blob/master/src/Saga.php#L242): Closes saga marking it as failed.
 
 On saga status change next events will be raised:
-- [SagaCreated()](): Saga was created (started);
-- [SagaStatusChanged()](): Saga status was changed;
-- [SagaClosed()](): Saga was closed;
+- [SagaCreated()](https://github.com/php-service-bus/sagas/blob/master/src/Contract/SagaCreated.php): Saga was created (started);
+- [SagaStatusChanged()](https://github.com/php-service-bus/sagas/blob/master/src/Contract/SagaStatusChanged.php): Saga status was changed;
+- [SagaClosed()](https://github.com/php-service-bus/sagas/blob/master/src/Contract/SagaClosed.php): Saga was closed;
 
 #### Creation
-There is a specific provider created for more convenient operations with sagas - [SagaProvider](). Each of its methods returns [Promise](https://github.com/amphp/amp/blob/master/lib/Promise.php) object.
-- [start()](): Creates and starts new saga firing a command;
-- [obtain()](): Retrieves a saga instance from database;
-- [save()](): Saves all changes in saga state and sends all saga events to transport.
+There is a specific provider created for more convenient operations with sagas - [SagaProvider](https://github.com/php-service-bus/module-sagas/blob/master/src/SagasProvider.php). Each of its methods returns [Promise](https://github.com/amphp/amp/blob/master/lib/Promise.php) object.
+- [start()](https://github.com/php-service-bus/module-sagas/blob/master/src/SagasProvider.php#L73): Creates and starts new saga firing a command;
+- [obtain()](https://github.com/php-service-bus/module-sagas/blob/master/src/SagasProvider.php#L115): Retrieves a saga instance from database;
+- [save()](https://github.com/php-service-bus/module-sagas/blob/master/src/SagasProvider.php#L166): Saves all changes in saga state and sends all saga events to transport.
 
 #### Example
 
