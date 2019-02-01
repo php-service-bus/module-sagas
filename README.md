@@ -78,15 +78,55 @@ There is a specific provider created for more convenient operations with sagas -
 #### Example
 
 ```php
+final class ExampleSagaId extends SagaId
+{
 
+}
+
+/**
+ * @SagaHeader(
+ *     idClass="Desperado\ServiceBus\ExampleSagaId",
+ *     expireDateModifier="+1 year",
+ *     containingIdProperty="operationId"
+ * )
+ */
+final class ExampleSaga extends Saga
+{
+    /**
+     * @inheritDoc
+     */
+    public function start(Command $command): void
+    {
+        $this->fire(
+            new SomeCommand(/** params */)
+        );
+    }
+
+    /**
+     * @SagaEventListener()
+     *
+     * @param SomeEvent $event
+     *
+     * @return void
+     */
+    private function onSomeEvent(SomeEvent $event): void
+    {
+        $this->fire(
+            new NextCommand(/**  */)
+        );
+    }
+}
 ```
 
 ```
-
+/** @var \ServiceBus\Sagas\Saga **/
+$saga = yield $sagaProvider->start(
+    ExampleSagaId::new(ExampleSaga::class),
+    new SomeStartCommand(),
+    new KernelContext()
+);
 ```
 
 On saga creation each saga will be started and saved. It is not necessary to save a saga if there were no changes to its state after start. Saga should be saved if it was obtained from database.
 
 *Saga uniqueness is ensured by a composite key which consists of an UUID and identifier class namespace. Identifier class namespace should be used here to allow launching different sagas with the same identifier (usually all of these are parts of a single business process).*
-
-
