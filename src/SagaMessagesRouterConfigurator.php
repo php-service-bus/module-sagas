@@ -79,7 +79,7 @@ final class SagaMessagesRouterConfigurator implements RouterConfigurator
                 foreach($sagaConfiguration->handlerCollection as $handler)
                 {
                     /** @noinspection PhpUnhandledExceptionInspection */
-                    $router->registerListener($handler->messageClass, new SagaMessageExecutor($handler));
+                    $router->registerListener((string) $handler->messageClass, new SagaMessageExecutor($handler));
                 }
             }
         }

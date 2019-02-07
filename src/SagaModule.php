@@ -47,7 +47,7 @@ final class SagaModule implements ServiceBusModule
     private $databaseAdapterServiceId;
 
     /**
-     * @var array<array-key, class-string<\ServicesBus\Sagas\Saga>>
+     * @var array<array-key, class-string<\ServiceBus\Sagas\Saga>>
      */
     private $sagasToRegister = [];
 
@@ -161,7 +161,7 @@ final class SagaModule implements ServiceBusModule
     /**
      * Enable sagas
      *
-     * @param array<array-key, class-string<\ServicesBus\Sagas\Saga>> $sagas
+     * @param array<array-key, class-string<\ServiceBus\Sagas\Saga>> $sagas
      *
      * @return $this
      */
@@ -178,7 +178,7 @@ final class SagaModule implements ServiceBusModule
     /**
      * Enable specified saga
      *
-     * @psalm-param class-string<\ServicesBus\Sagas\Saga> $sagaClass
+     * @psalm-param class-string<\ServiceBus\Sagas\Saga> $sagaClass
      *
      * @param string $sagaClass
      *

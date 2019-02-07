@@ -58,6 +58,7 @@ final class SagasProvider
      * Start a new saga
      *
      * @noinspection PhpDocRedundantThrowsInspection
+     * @psalm-suppress MixedTypeCoercion
      *
      * @param SagaId            $id
      * @param Command           $command
@@ -72,7 +73,7 @@ final class SagasProvider
      */
     public function start(SagaId $id, Command $command, ServiceBusContext $context): Promise
     {
-        /** @psalm-suppress InvalidArgument Incorrect psalm unpack parameters (...$args) */
+        /** @psalm-suppress InvalidArgument */
         return call(
             function(SagaId $id, Command $command, ServiceBusContext $context): \Generator
             {
@@ -102,6 +103,7 @@ final class SagasProvider
      * Load saga
      *
      * @noinspection PhpDocRedundantThrowsInspection
+     * @psalm-suppress MixedTypeCoercion
      *
      * @param SagaId            $id
      * @param ServiceBusContext $context
@@ -114,14 +116,17 @@ final class SagasProvider
      */
     public function obtain(SagaId $id, ServiceBusContext $context): Promise
     {
-        /** @psalm-suppress InvalidArgument Incorrect psalm unpack parameters (...$args) */
+        /** @psalm-suppress InvalidArgument */
         return call(
             function(SagaId $id, ServiceBusContext $context): \Generator
             {
                 /** @var \DateTimeImmutable $currentDatetime */
                 $currentDatetime = datetimeInstantiator('NOW');
 
-                /** @var Saga|null $saga */
+                /**
+                 * @psalm-suppress TooManyTemplateParams
+                 * @var Saga|null $saga
+                 */
                 $saga = yield $this->sagaStore->obtain($id);
 
                 if(null === $saga)
@@ -165,11 +170,14 @@ final class SagasProvider
      */
     public function save(Saga $saga, ServiceBusContext $context): Promise
     {
-        /** @psalm-suppress InvalidArgument Incorrect psalm unpack parameters (...$args) */
+        /** @psalm-suppress InvalidArgument */
         return call(
             function(Saga $saga, ServiceBusContext $context): \Generator
             {
-                /** @var Saga|null $existsSaga */
+                /**
+                 * @psalm-suppress TooManyTemplateParams
+                 * @var Saga|null $existsSaga
+                 */
                 $existsSaga = yield $this->sagaStore->obtain($saga->id());
 
                 if(null !== $existsSaga)
