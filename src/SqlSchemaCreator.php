@@ -22,9 +22,9 @@ use ServiceBus\Storage\Common\DatabaseAdapter;
 final class SqlSchemaCreator
 {
     private const FIXTURES = [
-        __DIR__ . '/../vendor/php-service-bus/sagas/src/Store/Sql/schema/extensions.sql'  => false,
-        __DIR__ . '/../vendor/php-service-bus/sagas/src/Store/Sql/schema/sagas_store.sql' => false,
-        __DIR__ . '/../vendor/php-service-bus/sagas/src/Store/Sql/schema/indexes.sql'     => true,
+        '/src/Store/Sql/schema/extensions.sql'  => false,
+        '/src/Store/Sql/schema/sagas_store.sql' => false,
+        '/src/Store/Sql/schema/indexes.sql'     => true,
     ];
 
     /**
@@ -33,11 +33,18 @@ final class SqlSchemaCreator
     private $adapter;
 
     /**
-     * @param DatabaseAdapter $adapter
+     * @var string
      */
-    public function __construct(DatabaseAdapter $adapter)
+    private $rootDirectoryPath;
+
+    /**
+     * @param DatabaseAdapter $adapter
+     * @param string          $rootDirectoryPath
+     */
+    public function __construct(DatabaseAdapter $adapter, string $rootDirectoryPath)
     {
-        $this->adapter = $adapter;
+        $this->adapter           = $adapter;
+        $this->rootDirectoryPath = \rtrim($rootDirectoryPath, '/');
     }
 
     /**
@@ -57,6 +64,8 @@ final class SqlSchemaCreator
                  */
                 foreach($fixtures as $filePath => $multipleQueries)
                 {
+                    $filePath = $this->rootDirectoryPath . $filePath;
+
                     $queries = true === $multipleQueries
                         ? \array_map('trim', \file($filePath))
                         : [(string) \file_get_contents($filePath)];

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "600df2eaa654aa94bdf487e80136bcdd",
+    "hash": "fb3a27a0487e1b911b8dd1c833501f18",
     "content-hash": "8394caa8a581c6ac794d3d1ead6cc67a",
     "packages": [
         {
@@ -376,16 +376,16 @@
         },
         {
             "name": "php-service-bus/common",
-            "version": "v3.0.0",
+            "version": "v3.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-service-bus/common.git",
-                "reference": "4832b5b1cf702eac55edddfdb62325aa20d5ba11"
+                "reference": "a9e3170dcd5523da89a0db97b27eed313e723738"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-service-bus/common/zipball/4832b5b1cf702eac55edddfdb62325aa20d5ba11",
-                "reference": "4832b5b1cf702eac55edddfdb62325aa20d5ba11",
+                "url": "https://api.github.com/repos/php-service-bus/common/zipball/a9e3170dcd5523da89a0db97b27eed313e723738",
+                "reference": "a9e3170dcd5523da89a0db97b27eed313e723738",
                 "shasum": ""
             },
             "require": {
@@ -425,7 +425,7 @@
                 "command-bus",
                 "messaging"
             ],
-            "time": "2019-02-07 11:11:38"
+            "time": "2019-02-11 07:59:39"
         },
         {
             "name": "php-service-bus/messages-router",
@@ -478,7 +478,7 @@
         },
         {
             "name": "php-service-bus/sagas",
-            "version": "v3.0.x-dev",
+            "version": "v3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-service-bus/sagas.git",
