@@ -59,7 +59,7 @@ final class SagaMessagesRouterConfigurator implements RouterConfigurator
     {
         try
         {
-            /** @var string $sagaClass */
+            /** @psalm-var class-string<\ServiceBus\Sagas\Saga> $sagaClass */
             foreach($this->sagasList as $sagaClass)
             {
                 $sagaConfiguration = $this->sagaConfigurationLoader->load($sagaClass);
