@@ -6,7 +6,7 @@
 This component is part of the [PHP Service Bus](https://github.com/php-service-bus/service-bus). Saga pattern implementation module.
 
 ## Documentation 
-[**Saga module**](https://github.com/php-service-bus/documentation/tree/master/pages)
+[**Saga module**](https://github.com/php-service-bus/documentation/blob/master/pages/modules/sagas.md)
 
 ## Support
 * [Telegram chat (RU)](https://t.me/php_service_bus)
