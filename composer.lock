@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "85658b1a56aa7711e4abfce1fb111c92",
-    "content-hash": "9938a83c84d2c2a88e5cf692fc5d7887",
+    "hash": "9667f63afc4ec8524ad3d0a4f10449ae",
+    "content-hash": "6630303da0dd0e6c247c2f6d0dbf1be0",
     "packages": [
         {
             "name": "amphp/amp",
@@ -327,16 +327,16 @@
         },
         {
             "name": "php-service-bus/annotations-reader",
-            "version": "v3.0.x-dev",
+            "version": "v3.0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-service-bus/annotations-reader.git",
-                "reference": "f48a2657edd7f8070a07da757414e7b274d6df8a"
+                "reference": "31c9952c21c5f36c5d75472a96f8ea48f46e257b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-service-bus/annotations-reader/zipball/f48a2657edd7f8070a07da757414e7b274d6df8a",
-                "reference": "f48a2657edd7f8070a07da757414e7b274d6df8a",
+                "url": "https://api.github.com/repos/php-service-bus/annotations-reader/zipball/31c9952c21c5f36c5d75472a96f8ea48f46e257b",
+                "reference": "31c9952c21c5f36c5d75472a96f8ea48f46e257b",
                 "shasum": ""
             },
             "require": {
@@ -372,20 +372,20 @@
                 "command-bus",
                 "messaging"
             ],
-            "time": "2019-02-22 07:23:15"
+            "time": "2019-02-26 08:48:18"
         },
         {
             "name": "php-service-bus/common",
-            "version": "v3.0.x-dev",
+            "version": "v3.0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-service-bus/common.git",
-                "reference": "d3b1b081a08e2656dcdb4ccb242b4e18abe74bdf"
+                "reference": "2290f2e66b7ea0718a7afccdbcc4d7928e001205"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-service-bus/common/zipball/d3b1b081a08e2656dcdb4ccb242b4e18abe74bdf",
-                "reference": "d3b1b081a08e2656dcdb4ccb242b4e18abe74bdf",
+                "url": "https://api.github.com/repos/php-service-bus/common/zipball/2290f2e66b7ea0718a7afccdbcc4d7928e001205",
+                "reference": "2290f2e66b7ea0718a7afccdbcc4d7928e001205",
                 "shasum": ""
             },
             "require": {
@@ -425,25 +425,25 @@
                 "command-bus",
                 "messaging"
             ],
-            "time": "2019-02-26 07:22:23"
+            "time": "2019-02-26 13:01:39"
         },
         {
             "name": "php-service-bus/messages-router",
-            "version": "v3.0.x-dev",
+            "version": "v3.0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-service-bus/messages-router.git",
-                "reference": "3027a261b83ac7615c6b75a0da8f4281a7328f7c"
+                "reference": "ed8fcbbe1947f6dbd3f9478ea5bca32d4f811262"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-service-bus/messages-router/zipball/3027a261b83ac7615c6b75a0da8f4281a7328f7c",
-                "reference": "3027a261b83ac7615c6b75a0da8f4281a7328f7c",
+                "url": "https://api.github.com/repos/php-service-bus/messages-router/zipball/ed8fcbbe1947f6dbd3f9478ea5bca32d4f811262",
+                "reference": "ed8fcbbe1947f6dbd3f9478ea5bca32d4f811262",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.2",
-                "php-service-bus/common": "v3.0.x-dev"
+                "php-service-bus/common": "v3.0.7"
             },
             "require-dev": {
                 "phpunit/phpunit": "^8",
@@ -474,31 +474,31 @@
                 "command-bus",
                 "messaging"
             ],
-            "time": "2019-02-26 07:31:52"
+            "time": "2019-02-26 13:10:01"
         },
         {
             "name": "php-service-bus/sagas",
-            "version": "v3.0.x-dev",
+            "version": "v3.0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-service-bus/sagas.git",
-                "reference": "f2a417dd3c26c49209f99ac97d6a34a20fe71cec"
+                "reference": "76f134e493542e9f9c89edcb1af8d1af4af34e1f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-service-bus/sagas/zipball/f2a417dd3c26c49209f99ac97d6a34a20fe71cec",
-                "reference": "f2a417dd3c26c49209f99ac97d6a34a20fe71cec",
+                "url": "https://api.github.com/repos/php-service-bus/sagas/zipball/76f134e493542e9f9c89edcb1af8d1af4af34e1f",
+                "reference": "76f134e493542e9f9c89edcb1af8d1af4af34e1f",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.2",
-                "php-service-bus/common": "v3.0.x-dev",
-                "php-service-bus/storage-common": "^v3.0"
+                "php-service-bus/common": "v3.0.7",
+                "php-service-bus/storage-common": "v3.0.7"
             },
             "require-dev": {
                 "doctrine/dbal": "^v2.6",
-                "php-service-bus/annotations-reader": "^v3.0",
-                "php-service-bus/storage-sql": "^v3.0",
+                "php-service-bus/annotations-reader": "v3.0.7",
+                "php-service-bus/storage-sql": "v3.0.7",
                 "phpunit/phpunit": "^8",
                 "vimeo/psalm": "^v3"
             },
@@ -531,20 +531,20 @@
                 "messaging",
                 "sagas"
             ],
-            "time": "2019-02-26 08:04:38"
+            "time": "2019-02-26 13:30:25"
         },
         {
             "name": "php-service-bus/storage-common",
-            "version": "v3.0.2",
+            "version": "v3.0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-service-bus/storage-common.git",
-                "reference": "f6f18f1e1d612841a19e6bb85961624832584d27"
+                "reference": "1a2b6a8e1a17bbe2fddd64aa37dc29611069bc07"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-service-bus/storage-common/zipball/f6f18f1e1d612841a19e6bb85961624832584d27",
-                "reference": "f6f18f1e1d612841a19e6bb85961624832584d27",
+                "url": "https://api.github.com/repos/php-service-bus/storage-common/zipball/1a2b6a8e1a17bbe2fddd64aa37dc29611069bc07",
+                "reference": "1a2b6a8e1a17bbe2fddd64aa37dc29611069bc07",
                 "shasum": ""
             },
             "require": {
@@ -579,7 +579,7 @@
                 "command-bus",
                 "messaging"
             ],
-            "time": "2019-02-15 09:29:40"
+            "time": "2019-02-26 13:21:45"
         },
         {
             "name": "ramsey/uuid",
@@ -1766,16 +1766,16 @@
         },
         {
             "name": "php-service-bus/storage-sql",
-            "version": "v3.0.3",
+            "version": "v3.0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-service-bus/storage-sql.git",
-                "reference": "3c8427b1589b1e05ff4a75727807ba6338a6a602"
+                "reference": "fa2f5f0587fed0a91fdc82b3a740bb2511119854"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-service-bus/storage-sql/zipball/3c8427b1589b1e05ff4a75727807ba6338a6a602",
-                "reference": "3c8427b1589b1e05ff4a75727807ba6338a6a602",
+                "url": "https://api.github.com/repos/php-service-bus/storage-sql/zipball/fa2f5f0587fed0a91fdc82b3a740bb2511119854",
+                "reference": "fa2f5f0587fed0a91fdc82b3a740bb2511119854",
                 "shasum": ""
             },
             "require": {
@@ -1783,7 +1783,7 @@
                 "ext-pgsql": "*",
                 "latitude/latitude": "^3.1",
                 "php": ">=7.2",
-                "php-service-bus/storage-common": "^v3.0",
+                "php-service-bus/storage-common": "v3.0.7",
                 "psr/log": "1.1.*"
             },
             "require-dev": {
@@ -1822,7 +1822,7 @@
                 "postgresql",
                 "sql"
             ],
-            "time": "2019-02-20 16:19:51"
+            "time": "2019-02-26 13:24:26"
         },
         {
             "name": "phpdocumentor/reflection-common",
@@ -3575,11 +3575,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "php-service-bus/sagas": 20,
-        "php-service-bus/annotations-reader": 20,
-        "php-service-bus/messages-router": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
