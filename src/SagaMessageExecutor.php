@@ -16,7 +16,6 @@ use Amp\Promise;
 use ServiceBus\Common\Context\ServiceBusContext;
 use ServiceBus\Common\MessageExecutor\MessageExecutor;
 use ServiceBus\Common\MessageHandler\MessageHandler;
-use ServiceBus\Common\Messages\Message;
 
 /**
  *
@@ -39,7 +38,7 @@ final class SagaMessageExecutor implements MessageExecutor
     /**
      * @inheritDoc
      */
-    public function __invoke(Message $message, ServiceBusContext $context): Promise
+    public function __invoke(object $message, ServiceBusContext $context): Promise
     {
         return ($this->messageHandler->closure)($message, $context);
     }

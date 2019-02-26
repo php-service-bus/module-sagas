@@ -17,7 +17,6 @@ use Amp\Promise;
 use ServiceBus\Common\Context\ServiceBusContext;
 use function ServiceBus\Common\datetimeInstantiator;
 use function ServiceBus\Common\invokeReflectionMethod;
-use ServiceBus\Common\Messages\Command;
 use function ServiceBus\Common\readReflectionPropertyValue;
 use ServiceBus\Sagas\Configuration\SagaMetadata;
 use ServiceBus\Sagas\Module\Exceptions\CantSaveUnStartedSaga;
@@ -42,7 +41,8 @@ final class SagasProvider
     /**
      * Sagas meta data
      *
-     * @var array<string, \ServiceBus\Sagas\Configuration\SagaMetadata>
+     * @psalm-var array<string, \ServiceBus\Sagas\Configuration\SagaMetadata>
+     * @var \ServiceBus\Sagas\Configuration\SagaMetadata[]
      */
     private $sagaMetaDataCollection = [];
 
@@ -57,11 +57,11 @@ final class SagasProvider
     /**
      * Start a new saga
      *
-     * @noinspection PhpDocRedundantThrowsInspection
+     * @noinspection   PhpDocRedundantThrowsInspection
      * @psalm-suppress MixedTypeCoercion
      *
      * @param SagaId            $id
-     * @param Command           $command
+     * @param object            $command
      * @param ServiceBusContext $context
      *
      * @return Promise<\ServiceBus\Sagas\Saga>
@@ -71,13 +71,13 @@ final class SagasProvider
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagasStoreInteractionFailed Database interaction error
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagaSerializationError Error while serializing saga
      */
-    public function start(SagaId $id, Command $command, ServiceBusContext $context): Promise
+    public function start(SagaId $id, object $command, ServiceBusContext $context): Promise
     {
         /** @psalm-suppress InvalidArgument */
         return call(
-            function(SagaId $id, Command $command, ServiceBusContext $context): \Generator
+            function(SagaId $id, object $command, ServiceBusContext $context): \Generator
             {
-                /** @var class-string<\ServiceBus\Sagas\Saga> $sagaClass */
+                /** @psalm-var class-string<\ServiceBus\Sagas\Saga> $sagaClass */
                 $sagaClass = $id->sagaClass;
 
                 $sagaMetaData = $this->extractSagaMetaData($sagaClass);
@@ -102,7 +102,7 @@ final class SagasProvider
     /**
      * Load saga
      *
-     * @noinspection PhpDocRedundantThrowsInspection
+     * @noinspection   PhpDocRedundantThrowsInspection
      * @psalm-suppress MixedTypeCoercion
      *
      * @param SagaId            $id
@@ -189,7 +189,7 @@ final class SagasProvider
                     return;
                 }
 
-                throw new CantSaveUnStartedSaga($saga);
+                throw CantSaveUnStartedSaga::create($saga);
             },
             $saga, $context
         );
@@ -245,13 +245,15 @@ final class SagasProvider
     {
         /**
          * @noinspection PhpUnhandledExceptionInspection
-         * @var array<int, \ServiceBus\Common\Messages\Command> $commands
+         * @psalm-var    array<int, object> $commands
+         * @var object[] $commands
          */
         $commands = invokeReflectionMethod($saga, 'firedCommands');
 
         /**
          * @noinspection PhpUnhandledExceptionInspection
-         * @var array<int, \ServiceBus\Common\Messages\Event> $events
+         * @psalm-var    array<int, object> $events
+         * @var object[] $events
          */
         $events = invokeReflectionMethod($saga, 'raisedEvents');
 
@@ -262,12 +264,15 @@ final class SagasProvider
 
         yield $generator;
 
-        /** @var array<mixed, \ServiceBus\Common\Messages\Message> $messages */
+        /**
+         * @var object[] $messages
+         * @psalm-var array<array-key, object> $messages
+         */
         $messages = \array_merge($commands, $events);
 
         $promises = [];
 
-        /** @var \ServiceBus\Common\Messages\Message $message */
+        /** @var object $message */
         foreach($messages as $message)
         {
             $promises[] = $context->delivery($message);
@@ -292,7 +297,7 @@ final class SagasProvider
             return $this->sagaMetaDataCollection[$sagaClass];
         }
 
-        throw new SagaMetaDataNotFound($sagaClass);
+        throw SagaMetaDataNotFound::create($sagaClass);
     }
 
     /**

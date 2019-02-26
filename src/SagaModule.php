@@ -47,7 +47,8 @@ final class SagaModule implements ServiceBusModule
     private $databaseAdapterServiceId;
 
     /**
-     * @var array<array-key, class-string<\ServiceBus\Sagas\Saga>>
+     * @psalm-var array<array-key, class-string<\ServiceBus\Sagas\Saga>>
+     * @var array
      */
     private $sagasToRegister = [];
 
@@ -124,8 +125,11 @@ final class SagaModule implements ServiceBusModule
      * Note: All files containing user-defined functions must be excluded
      * Note: Increases start time because of the need to scan files
      *
-     * @param array<array-key, string> $directories
-     * @param array<array-key, string> $excludedFiles
+     * @psalm-param  array<array-key, string> $directories
+     * @psalm-param  array<array-key, string> $excludedFiles
+     *
+     * @param array $directories
+     * @param array $excludedFiles
      *
      * @return $this
      */
@@ -149,7 +153,7 @@ final class SagaModule implements ServiceBusModule
 
             if(null !== $class && true === \is_a($class, Saga::class, true))
             {
-                /** @var class-string<\ServiceBus\Sagas\Saga> $class */
+                /** @psalm-var class-string<\ServiceBus\Sagas\Saga> $class */
 
                 $this->configureSaga($class);
             }
@@ -161,7 +165,9 @@ final class SagaModule implements ServiceBusModule
     /**
      * Enable sagas
      *
-     * @param array<array-key, class-string<\ServiceBus\Sagas\Saga>> $sagas
+     * @psalm-param array<array-key, class-string<\ServiceBus\Sagas\Saga>> $sagas
+     *
+     * @param array $sagas
      *
      * @return $this
      */

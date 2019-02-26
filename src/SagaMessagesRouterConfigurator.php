@@ -36,14 +36,17 @@ final class SagaMessagesRouterConfigurator implements RouterConfigurator
     /**
      * List of registered services
      *
-     * @var array<array-key, string>
+     * @psalm-var array<array-key, string>
+     * @var array
      */
     private $sagasList;
 
     /**
+     * @psalm-param array<array-key, string> $sagasList
+     *
      * @param SagasProvider           $sagaProvider
      * @param SagaConfigurationLoader $sagaConfigurationLoader
-     * @param array<array-key, string> $sagasList
+     * @param array                   $sagasList
      */
     public function __construct(SagasProvider $sagaProvider, SagaConfigurationLoader $sagaConfigurationLoader, array $sagasList)
     {

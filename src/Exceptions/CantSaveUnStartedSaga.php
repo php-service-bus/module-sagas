@@ -21,10 +21,12 @@ final class CantSaveUnStartedSaga extends \LogicException
 {
     /**
      * @param Saga $saga
+     *
+     * @return self
      */
-    public function __construct(Saga $saga)
+    public static function create(Saga $saga): self
     {
-        parent::__construct(
+        return new self(
             \sprintf(
                 'Saga with identifier "%s:%s" not exists. Please, use start() method for saga creation',
                 (string) $saga->id(),

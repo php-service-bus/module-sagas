@@ -19,10 +19,12 @@ final class SagaMetaDataNotFound extends \RuntimeException
 {
     /**
      * @param string $sagaClass
+     *
+     * @return self
      */
-    public function __construct(string $sagaClass)
+    public static function create(string $sagaClass): self
     {
-        parent::__construct(
+        return new self(
             \sprintf(
                 'Meta data of the saga "%s" not found. The saga was not configured',
                 $sagaClass

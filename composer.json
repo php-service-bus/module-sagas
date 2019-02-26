@@ -35,9 +35,9 @@
   },
   "require": {
     "php": ">=7.2",
-    "php-service-bus/sagas": "^v3.0",
-    "php-service-bus/annotations-reader": "^v3.0",
-    "php-service-bus/messages-router": "^v3.0"
+    "php-service-bus/sagas": "v3.0.x-dev",
+    "php-service-bus/annotations-reader": "v3.0.x-dev",
+    "php-service-bus/messages-router": "v3.0.x-dev"
   },
   "require-dev": {
     "php-service-bus/storage-sql": "^v3.0",
