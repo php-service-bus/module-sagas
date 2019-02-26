@@ -17,7 +17,6 @@ use Amp\Success;
 use Psr\Log\LogLevel;
 use ServiceBus\Common\Context\ServiceBusContext;
 use ServiceBus\Common\Endpoint\DeliveryOptions;
-use ServiceBus\Common\Messages\Message;
 use function ServiceBus\Common\uuid;
 
 /**
@@ -44,7 +43,7 @@ final class Context implements ServiceBusContext
     /**
      * @inheritDoc
      */
-    public function delivery(Message $message, ?DeliveryOptions $deliveryOptions = null): Promise
+    public function delivery(object $message, ?DeliveryOptions $deliveryOptions = null): Promise
     {
         return new Success();
     }
