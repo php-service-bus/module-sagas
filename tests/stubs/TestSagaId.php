@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Saga pattern implementation module
+ * Saga pattern implementation module.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -19,5 +19,4 @@ use ServiceBus\Sagas\SagaId;
  */
 final class TestSagaId extends SagaId
 {
-
 }

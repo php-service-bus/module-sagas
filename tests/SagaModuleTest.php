@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Saga pattern implementation module
+ * Saga pattern implementation module.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -36,7 +36,7 @@ final class SagaModuleTest extends TestCase
     private $containerBuilder;
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function setUp(): void
     {
@@ -47,12 +47,12 @@ final class SagaModuleTest extends TestCase
         $this->containerBuilder->addDefinitions([
             StorageConfiguration::class => new Definition(StorageConfiguration::class, ['sqlite:///:memory:']),
             DatabaseAdapter::class      => (new Definition(DoctrineDBALAdapter::class))
-                ->setArguments([new Reference(StorageConfiguration::class)])
+                ->setArguments([new Reference(StorageConfiguration::class)]),
         ]);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function tearDown(): void
     {
@@ -64,9 +64,9 @@ final class SagaModuleTest extends TestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function withSqlStorage(): void
     {
@@ -94,9 +94,9 @@ final class SagaModuleTest extends TestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function withCustomStore(): void
     {
@@ -118,7 +118,6 @@ final class SagaModuleTest extends TestCase
             CustomSagaStore::class,
             AmpPostgreSQLAdapter::class
         )->boot($this->containerBuilder);
-
 
         $this->containerBuilder->getDefinition(SagasProvider::class)->setPublic(true);
         $this->containerBuilder->compile();

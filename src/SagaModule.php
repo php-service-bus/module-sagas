@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Saga pattern implementation module
+ * Saga pattern implementation module.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -12,11 +12,11 @@ declare(strict_types = 1);
 
 namespace ServiceBus\Sagas\Module;
 
-use ServiceBus\AnnotationsReader\AnnotationsReader;
 use function ServiceBus\Common\canonicalizeFilesPath;
 use function ServiceBus\Common\extractNamespaceFromFile;
-use ServiceBus\Common\Module\ServiceBusModule;
 use function ServiceBus\Common\searchFiles;
+use ServiceBus\AnnotationsReader\AnnotationsReader;
+use ServiceBus\Common\Module\ServiceBusModule;
 use ServiceBus\MessagesRouter\ChainRouterConfigurator;
 use ServiceBus\MessagesRouter\Router;
 use ServiceBus\Sagas\Configuration\Annotations\SagaAnnotationBasedConfigurationLoader;
@@ -48,6 +48,7 @@ final class SagaModule implements ServiceBusModule
 
     /**
      * @psalm-var array<array-key, class-string<\ServiceBus\Sagas\Saga>>
+     *
      * @var array
      */
     private $sagasToRegister = [];
@@ -62,22 +63,22 @@ final class SagaModule implements ServiceBusModule
      * @param string|null $configurationLoaderServiceId If not specified, the default annotation-based configurator
      *                                                  will be used
      *
-     * @return self
-     *
      * @throws \LogicException The component "php-service-bus/storage-sql" was not installed
      * @throws \LogicException The component "php-service-bus/annotations-reader" was not installed
+     *
+     * @return self
+     *
      */
     public static function withSqlStorage(
         string $databaseAdapterServiceId,
         ?string $configurationLoaderServiceId = null
-    ): self
-    {
-        if(false === \interface_exists(DatabaseAdapter::class))
+    ): self {
+        if (false === \interface_exists(DatabaseAdapter::class))
         {
             throw new \LogicException('The component "php-service-bus/storage-sql" was not installed');
         }
 
-        if(null === $configurationLoaderServiceId && false === \interface_exists(AnnotationsReader::class))
+        if (null === $configurationLoaderServiceId && false === \interface_exists(AnnotationsReader::class))
         {
             throw new \LogicException('The component "php-service-bus/annotations-reader" was not installed');
         }
@@ -103,9 +104,8 @@ final class SagaModule implements ServiceBusModule
         string $storeImplementationServiceId,
         string $databaseAdapterServiceId,
         ?string $configurationLoaderServiceId = null
-    ): self
-    {
-        if(null === $configurationLoaderServiceId && false === \interface_exists(AnnotationsReader::class))
+    ): self {
+        if (null === $configurationLoaderServiceId && false === \interface_exists(AnnotationsReader::class))
         {
             throw new \LogicException('The component "php-service-bus/annotations-reader" was not installed');
         }
@@ -118,7 +118,7 @@ final class SagaModule implements ServiceBusModule
     }
 
     /**
-     * All sagas from the specified directories will be registered automatically
+     * All sagas from the specified directories will be registered automatically.
      *
      * @noinspection PhpDocMissingThrowsInspection
      *
@@ -139,11 +139,11 @@ final class SagaModule implements ServiceBusModule
         $files         = searchFiles($directories, '/\.php/i');
 
         /** @var \SplFileInfo $file */
-        foreach($files as $file)
+        foreach ($files as $file)
         {
             $filePath = $file->getRealPath();
 
-            if(true === \in_array($filePath, $excludedFiles, true))
+            if (true === \in_array($filePath, $excludedFiles, true))
             {
                 continue;
             }
@@ -151,10 +151,9 @@ final class SagaModule implements ServiceBusModule
             /** @noinspection PhpUnhandledExceptionInspection */
             $class = extractNamespaceFromFile($filePath);
 
-            if(null !== $class && true === \is_a($class, Saga::class, true))
+            if (null !== $class && true === \is_a($class, Saga::class, true))
             {
                 /** @psalm-var class-string<\ServiceBus\Sagas\Saga> $class */
-
                 $this->configureSaga($class);
             }
         }
@@ -163,7 +162,7 @@ final class SagaModule implements ServiceBusModule
     }
 
     /**
-     * Enable sagas
+     * Enable sagas.
      *
      * @psalm-param array<array-key, class-string<\ServiceBus\Sagas\Saga>> $sagas
      *
@@ -173,7 +172,7 @@ final class SagaModule implements ServiceBusModule
      */
     public function configureSagas(array $sagas): self
     {
-        foreach($sagas as $saga)
+        foreach ($sagas as $saga)
         {
             $this->configureSaga($saga);
         }
@@ -182,7 +181,7 @@ final class SagaModule implements ServiceBusModule
     }
 
     /**
-     * Enable specified saga
+     * Enable specified saga.
      *
      * @psalm-param class-string<\ServiceBus\Sagas\Saga> $sagaClass
      *
@@ -198,7 +197,7 @@ final class SagaModule implements ServiceBusModule
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function boot(ContainerBuilder $containerBuilder): void
     {
@@ -207,7 +206,7 @@ final class SagaModule implements ServiceBusModule
         $this->registerSagaStore($containerBuilder);
         $this->registerSagasProvider($containerBuilder);
 
-        if(null === $this->configurationLoaderServiceId)
+        if (null === $this->configurationLoaderServiceId)
         {
             $this->registerDefaultConfigurationLoader($containerBuilder);
 
@@ -226,10 +225,11 @@ final class SagaModule implements ServiceBusModule
      */
     private function registerRoutesConfigurator(ContainerBuilder $containerBuilder): void
     {
-        if(false === $containerBuilder->hasDefinition(ChainRouterConfigurator::class))
+        if (false === $containerBuilder->hasDefinition(ChainRouterConfigurator::class))
         {
-            $containerBuilder->addDefinitions([
-                    ChainRouterConfigurator::class => new Definition(ChainRouterConfigurator::class)
+            $containerBuilder->addDefinitions(
+                [
+                    ChainRouterConfigurator::class => new Definition(ChainRouterConfigurator::class),
                 ]
             );
         }
@@ -237,7 +237,7 @@ final class SagaModule implements ServiceBusModule
         /** @noinspection PhpUnhandledExceptionInspection */
         $routerConfiguratorDefinition = $containerBuilder->getDefinition(ChainRouterConfigurator::class);
 
-        if(false === $containerBuilder->hasDefinition(Router::class))
+        if (false === $containerBuilder->hasDefinition(Router::class))
         {
             $containerBuilder->addDefinitions([Router::class => new Definition(Router::class)]);
         }
@@ -252,7 +252,7 @@ final class SagaModule implements ServiceBusModule
             ->setArguments([
                 new Reference(SagasProvider::class),
                 new Reference(SagaConfigurationLoader::class),
-                '%service_bus.sagas.list%'
+                '%service_bus.sagas.list%',
             ]);
 
         $containerBuilder->addDefinitions([SagaMessagesRouterConfigurator::class => $sagaRoutingConfiguratorDefinition]);
@@ -284,7 +284,7 @@ final class SagaModule implements ServiceBusModule
      */
     private function registerSagaStore(ContainerBuilder $containerBuilder): void
     {
-        if(true === $containerBuilder->hasDefinition(SagasStore::class))
+        if (true === $containerBuilder->hasDefinition(SagasStore::class))
         {
             return;
         }
@@ -302,7 +302,7 @@ final class SagaModule implements ServiceBusModule
      */
     private function registerDefaultConfigurationLoader(ContainerBuilder $containerBuilder): void
     {
-        if(true === $containerBuilder->hasDefinition(SagaConfigurationLoader::class))
+        if (true === $containerBuilder->hasDefinition(SagaConfigurationLoader::class))
         {
             return;
         }
@@ -331,8 +331,7 @@ final class SagaModule implements ServiceBusModule
         string $sagaStoreServiceId,
         string $databaseAdapterServiceId,
         ?string $configurationLoaderServiceId = null
-    )
-    {
+    ) {
         $this->sagaStoreServiceId           = $sagaStoreServiceId;
         $this->databaseAdapterServiceId     = $databaseAdapterServiceId;
         $this->configurationLoaderServiceId = $configurationLoaderServiceId;

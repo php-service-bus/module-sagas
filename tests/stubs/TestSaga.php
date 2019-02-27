@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Saga pattern implementation module
+ * Saga pattern implementation module.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -12,8 +12,8 @@ declare(strict_types = 1);
 
 namespace ServiceBus\Sagas\Module\Tests\stubs;
 
-use ServiceBus\Sagas\Configuration\Annotations\SagaHeader;
 use ServiceBus\Sagas\Configuration\Annotations\SagaEventListener;
+use ServiceBus\Sagas\Configuration\Annotations\SagaHeader;
 use ServiceBus\Sagas\Saga;
 
 /**
@@ -26,17 +26,17 @@ use ServiceBus\Sagas\Saga;
 final class TestSaga extends Saga
 {
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function start(object $command): void
     {
-
     }
 
     /**
+     * @throws \ServiceBus\Sagas\Exceptions\ChangeSagaStateFailed
+     *
      * @return void
      *
-     * @throws \ServiceBus\Sagas\Exceptions\ChangeSagaStateFailed
      */
     public function doSomething(): void
     {
@@ -50,14 +50,14 @@ final class TestSaga extends Saga
      *
      * @param EmptyEvent $event
      *
+     * @throws \ServiceBus\Sagas\Exceptions\ChangeSagaStateFailed
+     *
      * @return void
      *
-     * @throws \ServiceBus\Sagas\Exceptions\ChangeSagaStateFailed
      */
     private function onEmptyEvent(/** @noinspection PhpUnusedParameterInspection */
         EmptyEvent $event
-    ): void
-    {
+    ): void {
         $this->makeFailed('test reason');
     }
 }

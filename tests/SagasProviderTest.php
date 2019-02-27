@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Saga pattern implementation module
+ * Saga pattern implementation module.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -13,8 +13,8 @@ declare(strict_types = 1);
 namespace ServiceBus\Sagas\Module\Tests;
 
 use function Amp\Promise\wait;
-use PHPUnit\Framework\TestCase;
 use function ServiceBus\Common\writeReflectionPropertyValue;
+use PHPUnit\Framework\TestCase;
 use ServiceBus\MessagesRouter\Router;
 use ServiceBus\MessagesRouter\Tests\stubs\TestCommand;
 use ServiceBus\Sagas\Module\Exceptions\CantSaveUnStartedSaga;
@@ -56,7 +56,7 @@ final class SagasProviderTest extends TestCase
     private $sagaProvider;
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      *
      * @throws \Throwable
      */
@@ -69,7 +69,7 @@ final class SagasProviderTest extends TestCase
         $this->containerBuilder->addDefinitions([
             StorageConfiguration::class => new Definition(StorageConfiguration::class, ['sqlite:///:memory:']),
             DatabaseAdapter::class      => (new Definition(DoctrineDBALAdapter::class))
-                ->setArguments([new Reference(StorageConfiguration::class)])
+                ->setArguments([new Reference(StorageConfiguration::class)]),
         ]);
 
         SagaModule::withSqlStorage(DatabaseAdapter::class)
@@ -95,14 +95,14 @@ final class SagasProviderTest extends TestCase
 
         $indexQueries = \file(__DIR__ . '/../vendor/php-service-bus/sagas/src/Store/Sql/schema/indexes.sql');
 
-        foreach($indexQueries as $query)
+        foreach ($indexQueries as $query)
         {
             wait($this->adapter->execute($query));
         }
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function tearDown(): void
     {
@@ -114,9 +114,9 @@ final class SagasProviderTest extends TestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function updateNonexistentSaga(): void
     {
@@ -129,9 +129,9 @@ final class SagasProviderTest extends TestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function startWithoutMetadata(): void
     {
@@ -145,9 +145,9 @@ final class SagasProviderTest extends TestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function start(): void
     {
@@ -160,15 +160,15 @@ final class SagasProviderTest extends TestCase
 
         static::assertNotNull($saga);
         static::assertInstanceOf(TestSaga::class, $saga);
-        static::assertEquals($id, $saga->id());
+        static::assertSame($id, $saga->id());
     }
 
     /**
      * @test
      *
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function startDuplicate(): void
     {
@@ -182,13 +182,12 @@ final class SagasProviderTest extends TestCase
         wait($this->sagaProvider->start($id, new TestCommand(), new Context()));
     }
 
-
     /**
      * @test
      *
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function startWithoutSchema(): void
     {
@@ -204,9 +203,9 @@ final class SagasProviderTest extends TestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function obtainWithoutSchema(): void
     {
@@ -222,9 +221,9 @@ final class SagasProviderTest extends TestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function saveWithoutSchema(): void
     {
@@ -240,9 +239,9 @@ final class SagasProviderTest extends TestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function obtainNonexistentSaga(): void
     {
@@ -254,9 +253,9 @@ final class SagasProviderTest extends TestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function obtainExpiredSaga(): void
     {
@@ -279,9 +278,9 @@ final class SagasProviderTest extends TestCase
     /**
      * @test
      *
-     * @return void
-     *
      * @throws \Throwable
+     *
+     * @return void
      */
     public function obtain(): void
     {
@@ -296,6 +295,6 @@ final class SagasProviderTest extends TestCase
         wait($this->sagaProvider->save($saga, $context));
         $loadedSaga = wait($this->sagaProvider->obtain($id, $context));
 
-        static::assertEquals($saga, $loadedSaga);
+        static::assertSame($saga->id()->id, $loadedSaga->id()->id);
     }
 }

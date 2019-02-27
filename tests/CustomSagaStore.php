@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Saga pattern implementation module
+ * Saga pattern implementation module.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -24,7 +24,7 @@ use ServiceBus\Sagas\Store\SagasStore;
 final class CustomSagaStore implements SagasStore
 {
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function obtain(SagaId $id): Promise
     {
@@ -32,7 +32,7 @@ final class CustomSagaStore implements SagasStore
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function save(Saga $saga): Promise
     {
@@ -40,7 +40,7 @@ final class CustomSagaStore implements SagasStore
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function update(Saga $saga): Promise
     {
@@ -48,7 +48,7 @@ final class CustomSagaStore implements SagasStore
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function remove(SagaId $id): Promise
     {

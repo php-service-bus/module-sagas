@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Saga pattern implementation module
+ * Saga pattern implementation module.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -48,7 +48,7 @@ final class SqlSchemaCreator
     }
 
     /**
-     * Import fixtures
+     * Import fixtures.
      *
      * @return Promise
      */
@@ -62,7 +62,7 @@ final class SqlSchemaCreator
                  * @var string $filePath
                  * @var bool   $multipleQueries
                  */
-                foreach($fixtures as $filePath => $multipleQueries)
+                foreach ($fixtures as $filePath => $multipleQueries)
                 {
                     $filePath = $this->rootDirectoryPath . $filePath;
 
@@ -70,9 +70,9 @@ final class SqlSchemaCreator
                         ? \array_map('trim', \file($filePath))
                         : [(string) \file_get_contents($filePath)];
 
-                    foreach($queries as $query)
+                    foreach ($queries as $query)
                     {
-                        if('' !== $query)
+                        if ('' !== $query)
                         {
                             /** @psalm-suppress TooManyTemplateParams Wrong Promise template */
                             yield $this->adapter->execute($query);

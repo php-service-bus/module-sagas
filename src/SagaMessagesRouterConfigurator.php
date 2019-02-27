@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Saga pattern implementation module
+ * Saga pattern implementation module.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -19,7 +19,7 @@ use ServiceBus\MessagesRouter\RouterConfigurator;
 use ServiceBus\Sagas\Configuration\SagaConfigurationLoader;
 
 /**
- * Register saga event listeners
+ * Register saga event listeners.
  */
 final class SagaMessagesRouterConfigurator implements RouterConfigurator
 {
@@ -34,9 +34,10 @@ final class SagaMessagesRouterConfigurator implements RouterConfigurator
     private $sagaConfigurationLoader;
 
     /**
-     * List of registered services
+     * List of registered services.
      *
      * @psalm-var array<array-key, string>
+     *
      * @var array
      */
     private $sagasList;
@@ -56,37 +57,38 @@ final class SagaMessagesRouterConfigurator implements RouterConfigurator
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function configure(Router $router): void
     {
         try
         {
             /** @psalm-var class-string<\ServiceBus\Sagas\Saga> $sagaClass */
-            foreach($this->sagasList as $sagaClass)
+            foreach ($this->sagasList as $sagaClass)
             {
                 $sagaConfiguration = $this->sagaConfigurationLoader->load($sagaClass);
 
                 /**
-                 * Append metadata details
+                 * Append metadata details.
                  *
                  * @noinspection PhpUnhandledExceptionInspection
                  */
                 invokeReflectionMethod(
                     $this->sagaProvider,
                     'appendMetaData',
-                    $sagaClass, $sagaConfiguration->metaData
+                    $sagaClass,
+                    $sagaConfiguration->metaData
                 );
 
                 /** @var \ServiceBus\Common\MessageHandler\MessageHandler $handler */
-                foreach($sagaConfiguration->handlerCollection as $handler)
+                foreach ($sagaConfiguration->handlerCollection as $handler)
                 {
                     /** @noinspection PhpUnhandledExceptionInspection */
                     $router->registerListener((string) $handler->messageClass, new SagaMessageExecutor($handler));
                 }
             }
         }
-        catch(\Throwable $throwable)
+        catch (\Throwable $throwable)
         {
             throw new MessageRouterConfigurationFailed($throwable->getMessage(), (int) $throwable->getCode(), $throwable);
         }

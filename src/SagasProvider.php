@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Saga pattern implementation module
+ * Saga pattern implementation module.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -13,11 +13,11 @@ declare(strict_types = 1);
 namespace ServiceBus\Sagas\Module;
 
 use function Amp\call;
-use Amp\Promise;
-use ServiceBus\Common\Context\ServiceBusContext;
 use function ServiceBus\Common\datetimeInstantiator;
 use function ServiceBus\Common\invokeReflectionMethod;
 use function ServiceBus\Common\readReflectionPropertyValue;
+use Amp\Promise;
+use ServiceBus\Common\Context\ServiceBusContext;
 use ServiceBus\Sagas\Configuration\SagaMetadata;
 use ServiceBus\Sagas\Module\Exceptions\CantSaveUnStartedSaga;
 use ServiceBus\Sagas\Module\Exceptions\SagaMetaDataNotFound;
@@ -27,21 +27,22 @@ use ServiceBus\Sagas\Store\Exceptions\LoadedExpiredSaga;
 use ServiceBus\Sagas\Store\SagasStore;
 
 /**
- * Sagas provider
+ * Sagas provider.
  */
 final class SagasProvider
 {
     /**
-     * Sagas store
+     * Sagas store.
      *
      * @var SagasStore
      */
     private $sagaStore;
 
     /**
-     * Sagas meta data
+     * Sagas meta data.
      *
      * @psalm-var array<string, \ServiceBus\Sagas\Configuration\SagaMetadata>
+     *
      * @var \ServiceBus\Sagas\Configuration\SagaMetadata[]
      */
     private $sagaMetaDataCollection = [];
@@ -55,7 +56,7 @@ final class SagasProvider
     }
 
     /**
-     * Start a new saga
+     * Start a new saga.
      *
      * @noinspection   PhpDocRedundantThrowsInspection
      * @psalm-suppress MixedTypeCoercion
@@ -64,12 +65,12 @@ final class SagasProvider
      * @param object            $command
      * @param ServiceBusContext $context
      *
-     * @return Promise<\ServiceBus\Sagas\Saga>
-     *
      * @throws \ServiceBus\Sagas\Module\Exceptions\SagaMetaDataNotFound
      * @throws \ServiceBus\Sagas\Store\Exceptions\DuplicateSaga The specified saga has already been added
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagasStoreInteractionFailed Database interaction error
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagaSerializationError Error while serializing saga
+     *
+     * @return Promise<\ServiceBus\Sagas\Saga>
      */
     public function start(SagaId $id, object $command, ServiceBusContext $context): Promise
     {
@@ -95,12 +96,14 @@ final class SagasProvider
 
                 return $saga;
             },
-            $id, $command, $context
+            $id,
+            $command,
+            $context
         );
     }
 
     /**
-     * Load saga
+     * Load saga.
      *
      * @noinspection   PhpDocRedundantThrowsInspection
      * @psalm-suppress MixedTypeCoercion
@@ -108,11 +111,11 @@ final class SagasProvider
      * @param SagaId            $id
      * @param ServiceBusContext $context
      *
-     * @return Promise<\ServiceBus\Sagas\Saga|null>
-     *
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagasStoreInteractionFailed Database interaction error
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagaSerializationError Error while deserializing saga
      * @throws \ServiceBus\Sagas\Store\Exceptions\LoadedExpiredSaga Expired saga loaded
+     *
+     * @return Promise<\ServiceBus\Sagas\Saga|null>
      */
     public function obtain(SagaId $id, ServiceBusContext $context): Promise
     {
@@ -125,17 +128,18 @@ final class SagasProvider
 
                 /**
                  * @psalm-suppress TooManyTemplateParams
+                 *
                  * @var Saga|null $saga
                  */
                 $saga = yield $this->sagaStore->obtain($id);
 
-                if(null === $saga)
+                if (null === $saga)
                 {
                     return null;
                 }
 
                 /** Non-expired saga */
-                if($saga->expireDate() > $currentDatetime)
+                if ($saga->expireDate() > $currentDatetime)
                 {
                     unset($currentDatetime);
 
@@ -150,23 +154,24 @@ final class SagasProvider
                     \sprintf('Unable to load the saga (ID: "%s") whose lifetime has expired', $id)
                 );
             },
-            $id, $context
+            $id,
+            $context
         );
     }
 
     /**
-     * Save\update a saga
+     * Save\update a saga.
      *
      * @noinspection PhpDocRedundantThrowsInspection
      *
      * @param Saga              $saga
      * @param ServiceBusContext $context
      *
-     * @return Promise  It doesn't return any result
-     *
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagasStoreInteractionFailed Database interaction error
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagaSerializationError Error while serializing saga
      * @throws \ServiceBus\Sagas\Module\Exceptions\CantSaveUnStartedSaga Attempt to save un-started saga
+     *
+     * @return Promise  It doesn't return any result
      */
     public function save(Saga $saga, ServiceBusContext $context): Promise
     {
@@ -176,11 +181,12 @@ final class SagasProvider
             {
                 /**
                  * @psalm-suppress TooManyTemplateParams
+                 *
                  * @var Saga|null $existsSaga
                  */
                 $existsSaga = yield $this->sagaStore->obtain($saga->id());
 
-                if(null !== $existsSaga)
+                if (null !== $existsSaga)
                 {
                     yield from $this->doStore($saga, $context, false);
 
@@ -191,33 +197,35 @@ final class SagasProvider
 
                 throw CantSaveUnStartedSaga::create($saga);
             },
-            $saga, $context
+            $saga,
+            $context
         );
     }
 
     /**
-     * Close expired saga
+     * Close expired saga.
      *
      * @noinspection PhpDocMissingThrowsInspection
      *
      * @param Saga              $saga
      * @param ServiceBusContext $context
      *
-     * @return \Generator It does not return any result
-     *
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagasStoreInteractionFailed Database interaction error
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagaSerializationError Error while serializing saga
      * @throws \ServiceBus\Sagas\Module\Exceptions\CantSaveUnStartedSaga Attempt to save un-started saga
+     *
+     * @return \Generator It does not return any result
      */
     private function doCloseExpired(Saga $saga, ServiceBusContext $context): \Generator
     {
         /**
          * @noinspection PhpUnhandledExceptionInspection
+         *
          * @var \ServiceBus\Sagas\SagaStatus $currentStatus
          */
         $currentStatus = readReflectionPropertyValue($saga, 'status');
 
-        if(true === $currentStatus->inProgress())
+        if (true === $currentStatus->inProgress())
         {
             /** @noinspection PhpUnhandledExceptionInspection */
             invokeReflectionMethod($saga, 'makeExpired');
@@ -227,7 +235,7 @@ final class SagasProvider
     }
 
     /**
-     * Execute add/update saga entry
+     * Execute add/update saga entry.
      *
      * @noinspection PhpDocMissingThrowsInspection
      *
@@ -235,17 +243,18 @@ final class SagasProvider
      * @param ServiceBusContext $context
      * @param bool              $isNew
      *
-     * @return \Generator
-     *
      * @throws \ServiceBus\Sagas\Store\Exceptions\DuplicateSaga The specified saga has already been added
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagasStoreInteractionFailed Database interaction error
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagaSerializationError Error while serializing saga
+     *
+     * @return \Generator
      */
     private function doStore(Saga $saga, ServiceBusContext $context, bool $isNew): \Generator
     {
         /**
          * @noinspection PhpUnhandledExceptionInspection
          * @psalm-var    array<int, object> $commands
+         *
          * @var object[] $commands
          */
         $commands = invokeReflectionMethod($saga, 'firedCommands');
@@ -253,6 +262,7 @@ final class SagasProvider
         /**
          * @noinspection PhpUnhandledExceptionInspection
          * @psalm-var    array<int, object> $events
+         *
          * @var object[] $events
          */
         $events = invokeReflectionMethod($saga, 'raisedEvents');
@@ -273,7 +283,7 @@ final class SagasProvider
         $promises = [];
 
         /** @var object $message */
-        foreach($messages as $message)
+        foreach ($messages as $message)
         {
             $promises[] = $context->delivery($message);
         }
@@ -282,17 +292,17 @@ final class SagasProvider
     }
 
     /**
-     * Receive saga meta data information
+     * Receive saga meta data information.
      *
      * @param string $sagaClass
      *
-     * @return SagaMetadata
-     *
      * @throws \ServiceBus\Sagas\Module\Exceptions\SagaMetaDataNotFound
+     *
+     * @return SagaMetadata
      */
     private function extractSagaMetaData(string $sagaClass): SagaMetadata
     {
-        if(true === isset($this->sagaMetaDataCollection[$sagaClass]))
+        if (true === isset($this->sagaMetaDataCollection[$sagaClass]))
         {
             return $this->sagaMetaDataCollection[$sagaClass];
         }
@@ -302,7 +312,7 @@ final class SagasProvider
 
     /**
      * Add meta data for specified saga
-     * Called from the infrastructure layer using Reflection API
+     * Called from the infrastructure layer using Reflection API.
      *
      * @noinspection PhpUnusedPrivateMethodInspection
      *

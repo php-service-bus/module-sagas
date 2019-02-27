@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Saga pattern implementation module
+ * Saga pattern implementation module.
  *
  * @author  Maksim Masiukevich <dev@async-php.com>
  * @license MIT
@@ -36,7 +36,7 @@ final class SagaMessageExecutor implements MessageExecutor
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function __invoke(object $message, ServiceBusContext $context): Promise
     {
