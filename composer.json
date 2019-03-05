@@ -35,10 +35,9 @@
   },
   "require": {
     "php": ">=7.2",
-    "php-service-bus/sagas": "v3.0.8",
+    "php-service-bus/sagas": "v3.0.x-dev",
     "php-service-bus/annotations-reader": "v3.0.8",
-    "php-service-bus/messages-router": "v3.0.8",
-    "php-service-bus/mutex": "v3.0.x-dev"
+    "php-service-bus/messages-router": "v3.0.8"
   },
   "require-dev": {
     "php-service-bus/code-style-config": "^v0.1",
