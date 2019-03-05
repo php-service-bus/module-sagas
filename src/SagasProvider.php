@@ -77,7 +77,7 @@ final class SagasProvider
     public function __destruct()
     {
         /** @var \ServiceBus\Mutex\Lock $lock */
-        foreach($this->lockCollection as $lock)
+        foreach ($this->lockCollection as $lock)
         {
             $lock->release();
         }
@@ -93,12 +93,12 @@ final class SagasProvider
      * @param object            $command
      * @param ServiceBusContext $context
      *
-     * @return Promise<\ServiceBus\Sagas\Saga>
      * @throws \ServiceBus\Sagas\Store\Exceptions\DuplicateSaga The specified saga has already been added
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagasStoreInteractionFailed Database interaction error
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagaSerializationError Error while serializing saga
-     *
      * @throws \ServiceBus\Sagas\Module\Exceptions\SagaMetaDataNotFound
+     *
+     * @return Promise<\ServiceBus\Sagas\Saga>
      */
     public function start(SagaId $id, object $command, ServiceBusContext $context): Promise
     {
@@ -141,11 +141,11 @@ final class SagasProvider
      * @param SagaId            $id
      * @param ServiceBusContext $context
      *
-     * @return Promise<\ServiceBus\Sagas\Saga|null>
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagaSerializationError Error while deserializing saga
      * @throws \ServiceBus\Sagas\Store\Exceptions\LoadedExpiredSaga Expired saga loaded
-     *
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagasStoreInteractionFailed Database interaction error
+     *
+     * @return Promise<\ServiceBus\Sagas\Saga|null>
      */
     public function obtain(SagaId $id, ServiceBusContext $context): Promise
     {
@@ -165,13 +165,13 @@ final class SagasProvider
                  */
                 $saga = yield $this->sagaStore->obtain($id);
 
-                if(null === $saga)
+                if (null === $saga)
                 {
                     return null;
                 }
 
                 /** Non-expired saga */
-                if($saga->expireDate() > $currentDatetime)
+                if ($saga->expireDate() > $currentDatetime)
                 {
                     unset($currentDatetime);
 
@@ -199,11 +199,11 @@ final class SagasProvider
      * @param Saga              $saga
      * @param ServiceBusContext $context
      *
-     * @return Promise  It doesn't return any result
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagaSerializationError Error while serializing saga
      * @throws \ServiceBus\Sagas\Module\Exceptions\CantSaveUnStartedSaga Attempt to save un-started saga
-     *
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagasStoreInteractionFailed Database interaction error
+     *
+     * @return Promise  It doesn't return any result
      */
     public function save(Saga $saga, ServiceBusContext $context): Promise
     {
@@ -218,7 +218,7 @@ final class SagasProvider
                  */
                 $existsSaga = yield $this->sagaStore->obtain($saga->id());
 
-                if(null !== $existsSaga)
+                if (null !== $existsSaga)
                 {
                     yield from $this->doStore($saga, $context, false);
 
@@ -242,11 +242,11 @@ final class SagasProvider
      * @param Saga              $saga
      * @param ServiceBusContext $context
      *
-     * @return \Generator It does not return any result
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagaSerializationError Error while serializing saga
      * @throws \ServiceBus\Sagas\Module\Exceptions\CantSaveUnStartedSaga Attempt to save un-started saga
-     *
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagasStoreInteractionFailed Database interaction error
+     *
+     * @return \Generator It does not return any result
      */
     private function doCloseExpired(Saga $saga, ServiceBusContext $context): \Generator
     {
@@ -257,7 +257,7 @@ final class SagasProvider
          */
         $currentStatus = readReflectionPropertyValue($saga, 'status');
 
-        if(true === $currentStatus->inProgress())
+        if (true === $currentStatus->inProgress())
         {
             /** @noinspection PhpUnhandledExceptionInspection */
             invokeReflectionMethod($saga, 'makeExpired');
@@ -275,11 +275,11 @@ final class SagasProvider
      * @param ServiceBusContext $context
      * @param bool              $isNew
      *
-     * @return \Generator
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagasStoreInteractionFailed Database interaction error
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagaSerializationError Error while serializing saga
-     *
      * @throws \ServiceBus\Sagas\Store\Exceptions\DuplicateSaga The specified saga has already been added
+     *
+     * @return \Generator
      */
     private function doStore(Saga $saga, ServiceBusContext $context, bool $isNew): \Generator
     {
@@ -315,7 +315,7 @@ final class SagasProvider
         $promises = [];
 
         /** @var object $message */
-        foreach($messages as $message)
+        foreach ($messages as $message)
         {
             $promises[] = $context->delivery($message);
         }
@@ -331,13 +331,13 @@ final class SagasProvider
      *
      * @param string $sagaClass
      *
-     * @return SagaMetadata
      * @throws \ServiceBus\Sagas\Module\Exceptions\SagaMetaDataNotFound
      *
+     * @return SagaMetadata
      */
     private function extractSagaMetaData(string $sagaClass): SagaMetadata
     {
-        if(true === isset($this->sagaMetaDataCollection[$sagaClass]))
+        if (true === isset($this->sagaMetaDataCollection[$sagaClass]))
         {
             return $this->sagaMetaDataCollection[$sagaClass];
         }
@@ -355,8 +355,8 @@ final class SagasProvider
      * @param SagaMetadata $metadata
      *
      * @return void
-     * @see          SagaMessagesRouterConfigurator::registerRoutes
      *
+     * @see          SagaMessagesRouterConfigurator::registerRoutes
      */
     private function appendMetaData(string $sagaClass, SagaMetadata $metadata): void
     {
@@ -364,7 +364,7 @@ final class SagasProvider
     }
 
     /**
-     * Setup mutes on saga
+     * Setup mutes on saga.
      *
      * @param SagaId $id
      *
@@ -380,7 +380,7 @@ final class SagasProvider
     }
 
     /**
-     * Remove lock from saga
+     * Remove lock from saga.
      *
      * @param SagaId $id
      *
@@ -393,7 +393,7 @@ final class SagasProvider
         /** @var Lock|null $lock */
         $lock = $this->lockCollection[$mutexKey] ?? null;
 
-        if(null !== $lock)
+        if (null !== $lock)
         {
             unset($this->lockCollection[$mutexKey]);
 
