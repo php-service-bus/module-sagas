@@ -106,6 +106,8 @@ final class SagasProvider
         return call(
             function(SagaId $id, object $command, ServiceBusContext $context): \Generator
             {
+                yield from $this->setupMutex($id);
+
                 /** @psalm-var class-string<\ServiceBus\Sagas\Saga> $sagaClass */
                 $sagaClass = $id->sagaClass;
 
@@ -154,11 +156,7 @@ final class SagasProvider
                 /** @var \DateTimeImmutable $currentDatetime */
                 $currentDatetime = datetimeInstantiator('NOW');
 
-                $mutexKey = self::createMutexKey($id);
-
-                $mutex = $this->mutexFactory->create($mutexKey);
-
-                $this->lockCollection[$mutexKey] = yield $mutex->acquire();
+                yield from $this->setupMutex($id);
 
                 /**
                  * @psalm-suppress TooManyTemplateParams
@@ -363,6 +361,22 @@ final class SagasProvider
     private function appendMetaData(string $sagaClass, SagaMetadata $metadata): void
     {
         $this->sagaMetaDataCollection[$sagaClass] = $metadata;
+    }
+
+    /**
+     * Setup mutes on saga
+     *
+     * @param SagaId $id
+     *
+     * @return \Generator
+     */
+    private function setupMutex(SagaId $id): \Generator
+    {
+        $mutexKey = self::createMutexKey($id);
+
+        $mutex = $this->mutexFactory->create($mutexKey);
+
+        $this->lockCollection[$mutexKey] = yield $mutex->acquire();
     }
 
     /**
