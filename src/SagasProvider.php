@@ -213,31 +213,20 @@ final class SagasProvider
         return call(
             function(Saga $saga, ServiceBusContext $context): \Generator
             {
-                try
+                /**
+                 * @psalm-suppress TooManyTemplateParams
+                 *
+                 * @var Saga|null $existsSaga
+                 */
+                $existsSaga = yield $this->sagaStore->obtain($saga->id());
+
+                if(null !== $existsSaga)
                 {
-                    /**
-                     * @psalm-suppress TooManyTemplateParams
-                     *
-                     * @var Saga|null $existsSaga
-                     */
-                    $existsSaga = yield $this->sagaStore->obtain($saga->id());
+                    yield from $this->doStore($saga, $context, false);
 
-                    if(null !== $existsSaga)
-                    {
-                        yield from $this->doStore($saga, $context, false);
+                    unset($existsSaga);
 
-                        unset($existsSaga);
-
-                        $this->releaseMutex($saga->id());
-
-                        return;
-                    }
-                }
-                catch(\Throwable $throwable)
-                {
-                    $this->releaseMutex($saga->id());
-
-                    throw $throwable;
+                    return;
                 }
 
                 throw CantSaveUnStartedSaga::create($saga);
@@ -334,6 +323,9 @@ final class SagasProvider
         }
 
         yield $promises;
+
+        /** remove mutex */
+        $this->releaseMutex($saga->id());
     }
 
     /**
