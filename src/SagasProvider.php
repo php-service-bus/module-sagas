@@ -16,6 +16,7 @@ use function Amp\call;
 use function ServiceBus\Common\datetimeInstantiator;
 use function ServiceBus\Common\invokeReflectionMethod;
 use function ServiceBus\Common\readReflectionPropertyValue;
+use function ServiceBus\Sagas\createMutexKey;
 use Amp\Promise;
 use ServiceBus\Common\Context\ServiceBusContext;
 use ServiceBus\Mutex\InMemoryMutexFactory;
@@ -93,10 +94,10 @@ final class SagasProvider
      * @param object            $command
      * @param ServiceBusContext $context
      *
-     * @throws \ServiceBus\Sagas\Store\Exceptions\DuplicateSaga The specified saga has already been added
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagasStoreInteractionFailed Database interaction error
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagaSerializationError Error while serializing saga
      * @throws \ServiceBus\Sagas\Module\Exceptions\SagaMetaDataNotFound
+     * @throws \ServiceBus\Sagas\Store\Exceptions\DuplicateSaga The specified saga has already been added
      *
      * @return Promise<\ServiceBus\Sagas\Saga>
      */
@@ -141,9 +142,9 @@ final class SagasProvider
      * @param SagaId            $id
      * @param ServiceBusContext $context
      *
-     * @throws \ServiceBus\Sagas\Store\Exceptions\SagaSerializationError Error while deserializing saga
      * @throws \ServiceBus\Sagas\Store\Exceptions\LoadedExpiredSaga Expired saga loaded
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagasStoreInteractionFailed Database interaction error
+     * @throws \ServiceBus\Sagas\Store\Exceptions\SagaSerializationError Error while deserializing saga
      *
      * @return Promise<\ServiceBus\Sagas\Saga|null>
      */
@@ -167,6 +168,8 @@ final class SagasProvider
 
                 if (null === $saga)
                 {
+                    $this->releaseMutex($id);
+
                     return null;
                 }
 
@@ -199,9 +202,9 @@ final class SagasProvider
      * @param Saga              $saga
      * @param ServiceBusContext $context
      *
-     * @throws \ServiceBus\Sagas\Store\Exceptions\SagaSerializationError Error while serializing saga
      * @throws \ServiceBus\Sagas\Module\Exceptions\CantSaveUnStartedSaga Attempt to save un-started saga
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagasStoreInteractionFailed Database interaction error
+     * @throws \ServiceBus\Sagas\Store\Exceptions\SagaSerializationError Error while serializing saga
      *
      * @return Promise  It doesn't return any result
      */
@@ -242,9 +245,9 @@ final class SagasProvider
      * @param Saga              $saga
      * @param ServiceBusContext $context
      *
-     * @throws \ServiceBus\Sagas\Store\Exceptions\SagaSerializationError Error while serializing saga
      * @throws \ServiceBus\Sagas\Module\Exceptions\CantSaveUnStartedSaga Attempt to save un-started saga
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagasStoreInteractionFailed Database interaction error
+     * @throws \ServiceBus\Sagas\Store\Exceptions\SagaSerializationError Error while serializing saga
      *
      * @return \Generator It does not return any result
      */
@@ -275,9 +278,9 @@ final class SagasProvider
      * @param ServiceBusContext $context
      * @param bool              $isNew
      *
-     * @throws \ServiceBus\Sagas\Store\Exceptions\SagasStoreInteractionFailed Database interaction error
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagaSerializationError Error while serializing saga
      * @throws \ServiceBus\Sagas\Store\Exceptions\DuplicateSaga The specified saga has already been added
+     * @throws \ServiceBus\Sagas\Store\Exceptions\SagasStoreInteractionFailed Database interaction error
      *
      * @return \Generator
      */
@@ -372,7 +375,7 @@ final class SagasProvider
      */
     private function setupMutex(SagaId $id): \Generator
     {
-        $mutexKey = self::createMutexKey($id);
+        $mutexKey = createMutexKey($id);
 
         $mutex = $this->mutexFactory->create($mutexKey);
 
@@ -388,7 +391,7 @@ final class SagasProvider
      */
     private function releaseMutex(SagaId $id): void
     {
-        $mutexKey = self::createMutexKey($id);
+        $mutexKey = createMutexKey($id);
 
         /** @var Lock|null $lock */
         $lock = $this->lockCollection[$mutexKey] ?? null;
@@ -399,15 +402,5 @@ final class SagasProvider
 
             $lock->release();
         }
-    }
-
-    /**
-     * @param SagaId $id
-     *
-     * @return string
-     */
-    private static function createMutexKey(SagaId $id): string
-    {
-        return \sha1(\sprintf('%s:%s', $id->id, $id->sagaClass));
     }
 }
