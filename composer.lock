@@ -884,12 +884,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-service-bus/sagas.git",
-                "reference": "e8cc35b6ddadee9dd63e768a32acf3d9221091b0"
+                "reference": "7d201b7cc8ba3595a2c37de1773de9ff031af4b1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-service-bus/sagas/zipball/e8cc35b6ddadee9dd63e768a32acf3d9221091b0",
-                "reference": "e8cc35b6ddadee9dd63e768a32acf3d9221091b0",
+                "url": "https://api.github.com/repos/php-service-bus/sagas/zipball/7d201b7cc8ba3595a2c37de1773de9ff031af4b1",
+                "reference": "7d201b7cc8ba3595a2c37de1773de9ff031af4b1",
                 "shasum": ""
             },
             "require": {
@@ -935,7 +935,7 @@
                 "messaging",
                 "sagas"
             ],
-            "time": "2019-03-05T15:14:29+00:00"
+            "time": "2019-03-05T15:21:06+00:00"
         },
         {
             "name": "php-service-bus/storage-common",

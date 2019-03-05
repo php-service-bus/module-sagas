@@ -379,6 +379,10 @@ final class SagasProvider
 
         $mutex = $this->mutexFactory->create($mutexKey);
 
+        /**
+         * @psalm-suppress TooManyTemplateParams
+         * @psalm-suppress InvalidPropertyAssignmentValue
+         */
         $this->lockCollection[$mutexKey] = yield $mutex->acquire();
     }
 
