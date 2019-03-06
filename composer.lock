@@ -834,12 +834,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-service-bus/mutex.git",
-                "reference": "696cd8a618238e5f726fc84505495432cf5fb1e4"
+                "reference": "03bdc8ee73593960ec69646107dcb41f95328125"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-service-bus/mutex/zipball/696cd8a618238e5f726fc84505495432cf5fb1e4",
-                "reference": "696cd8a618238e5f726fc84505495432cf5fb1e4",
+                "url": "https://api.github.com/repos/php-service-bus/mutex/zipball/03bdc8ee73593960ec69646107dcb41f95328125",
+                "reference": "03bdc8ee73593960ec69646107dcb41f95328125",
                 "shasum": ""
             },
             "require": {
@@ -876,7 +876,7 @@
                 "command-bus",
                 "messaging"
             ],
-            "time": "2019-03-05T12:40:19+00:00"
+            "time": "2019-03-06T07:52:53+00:00"
         },
         {
             "name": "php-service-bus/sagas",
@@ -884,12 +884,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-service-bus/sagas.git",
-                "reference": "7d201b7cc8ba3595a2c37de1773de9ff031af4b1"
+                "reference": "e59abb65adf65110aab9e1d99d154b764154b2c6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-service-bus/sagas/zipball/7d201b7cc8ba3595a2c37de1773de9ff031af4b1",
-                "reference": "7d201b7cc8ba3595a2c37de1773de9ff031af4b1",
+                "url": "https://api.github.com/repos/php-service-bus/sagas/zipball/e59abb65adf65110aab9e1d99d154b764154b2c6",
+                "reference": "e59abb65adf65110aab9e1d99d154b764154b2c6",
                 "shasum": ""
             },
             "require": {
@@ -935,7 +935,7 @@
                 "messaging",
                 "sagas"
             ],
-            "time": "2019-03-05T15:21:06+00:00"
+            "time": "2019-03-06T07:57:39+00:00"
         },
         {
             "name": "php-service-bus/storage-common",

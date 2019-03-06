@@ -80,7 +80,7 @@ final class SagasProvider
         /** @var \ServiceBus\Mutex\Lock $lock */
         foreach ($this->lockCollection as $lock)
         {
-            $lock->release();
+            yield $lock->release();
         }
     }
 
@@ -168,7 +168,7 @@ final class SagasProvider
 
                 if (null === $saga)
                 {
-                    $this->releaseMutex($id);
+                    yield from $this->releaseMutex($id);
 
                     return null;
                 }
@@ -326,7 +326,7 @@ final class SagasProvider
         yield $promises;
 
         /** remove mutex */
-        $this->releaseMutex($saga->id());
+        yield from $this->releaseMutex($saga->id());
     }
 
     /**
@@ -391,9 +391,9 @@ final class SagasProvider
      *
      * @param SagaId $id
      *
-     * @return void
+     * @return \Generator
      */
-    private function releaseMutex(SagaId $id): void
+    private function releaseMutex(SagaId $id): \Generator
     {
         $mutexKey = createMutexKey($id);
 
@@ -404,7 +404,7 @@ final class SagasProvider
         {
             unset($this->lockCollection[$mutexKey]);
 
-            $lock->release();
+            yield $lock->release();
         }
     }
 }
