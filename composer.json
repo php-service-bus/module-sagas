@@ -35,13 +35,13 @@
   },
   "require": {
     "php": ">=7.2",
-    "php-service-bus/sagas": "v3.0.x-dev",
-    "php-service-bus/annotations-reader": "v3.0.8",
-    "php-service-bus/messages-router": "v3.0.8"
+    "php-service-bus/sagas": "^v3.0",
+    "php-service-bus/annotations-reader": "^v3.0",
+    "php-service-bus/messages-router": "^v3.0"
   },
   "require-dev": {
     "php-service-bus/code-style-config": "^v0.1",
-    "php-service-bus/storage-sql": "v3.0.8",
+    "php-service-bus/storage-sql": "^v3.0",
     "symfony/dependency-injection": "^v4.2",
     "doctrine/dbal": "^v2.6",
     "phpunit/phpunit": "^8",
