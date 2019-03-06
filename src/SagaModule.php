@@ -19,6 +19,8 @@ use ServiceBus\AnnotationsReader\AnnotationsReader;
 use ServiceBus\Common\Module\ServiceBusModule;
 use ServiceBus\MessagesRouter\ChainRouterConfigurator;
 use ServiceBus\MessagesRouter\Router;
+use ServiceBus\Mutex\InMemoryMutexFactory;
+use ServiceBus\Mutex\MutexFactory;
 use ServiceBus\Sagas\Configuration\Annotations\SagaAnnotationBasedConfigurationLoader;
 use ServiceBus\Sagas\Configuration\DefaultEventListenerProcessorFactory;
 use ServiceBus\Sagas\Configuration\EventListenerProcessorFactory;
@@ -204,6 +206,7 @@ final class SagaModule implements ServiceBusModule
         $containerBuilder->setParameter('service_bus.sagas.list', $this->sagasToRegister);
 
         $this->registerSagaStore($containerBuilder);
+        $this->registerMutexFactory($containerBuilder);
         $this->registerSagasProvider($containerBuilder);
 
         if (null === $this->configurationLoaderServiceId)
@@ -214,6 +217,19 @@ final class SagaModule implements ServiceBusModule
         }
 
         $this->registerRoutesConfigurator($containerBuilder);
+    }
+
+    /**
+     * @param ContainerBuilder $containerBuilder
+     */
+    private function registerMutexFactory(ContainerBuilder $containerBuilder): void
+    {
+        if (false === $containerBuilder->hasDefinition(MutexFactory::class))
+        {
+            $containerBuilder->addDefinitions([
+                MutexFactory::class => new Definition(InMemoryMutexFactory::class),
+            ]);
+        }
     }
 
     /**
@@ -272,7 +288,12 @@ final class SagaModule implements ServiceBusModule
     private function registerSagasProvider(ContainerBuilder $containerBuilder): void
     {
         $sagasProviderDefinition = (new Definition(SagasProvider::class))
-            ->setArguments([new Reference(SagasStore::class)]);
+            ->setArguments(
+                [
+                    new Reference(SagasStore::class),
+                    new Reference(MutexFactory::class),
+                ]
+            );
 
         $containerBuilder->addDefinitions([SagasProvider::class => $sagasProviderDefinition]);
     }
