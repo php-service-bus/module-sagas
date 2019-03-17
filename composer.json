@@ -35,7 +35,7 @@
   },
   "require": {
     "php": ">=7.2",
-    "php-service-bus/sagas": "^v3.0",
+    "php-service-bus/sagas": "^v3.1",
     "php-service-bus/annotations-reader": "^v3.0",
     "php-service-bus/messages-router": "^v3.0"
   },
@@ -48,7 +48,7 @@
     "vimeo/psalm": "^v3"
   },
   "prefer-stable": true,
-  "minimum-stability": "dev",
+  "minimum-stability": "stable",
   "scripts": {
     "psalm": "./vendor/bin/psalm --config=psalm.xml",
     "tests": "./vendor/bin/phpunit --configuration phpunit.xml --verbose",
