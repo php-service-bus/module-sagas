@@ -434,16 +434,16 @@
         },
         {
             "name": "doctrine/annotations",
-            "version": "v1.6.0",
+            "version": "v1.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/annotations.git",
-                "reference": "c7f2050c68a9ab0bdb0f98567ec08d80ea7d24d5"
+                "reference": "53120e0eb10355388d6ccbe462f1fea34ddadb24"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/annotations/zipball/c7f2050c68a9ab0bdb0f98567ec08d80ea7d24d5",
-                "reference": "c7f2050c68a9ab0bdb0f98567ec08d80ea7d24d5",
+                "url": "https://api.github.com/repos/doctrine/annotations/zipball/53120e0eb10355388d6ccbe462f1fea34ddadb24",
+                "reference": "53120e0eb10355388d6ccbe462f1fea34ddadb24",
                 "shasum": ""
             },
             "require": {
@@ -498,7 +498,7 @@
                 "docblock",
                 "parser"
             ],
-            "time": "2017-12-06T07:11:42+00:00"
+            "time": "2019-03-25T19:12:02+00:00"
         },
         {
             "name": "doctrine/cache",
@@ -880,16 +880,16 @@
         },
         {
             "name": "php-service-bus/sagas",
-            "version": "v3.2.0",
+            "version": "3.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-service-bus/sagas.git",
-                "reference": "716cece99620c328f4122624551971fa8ade834f"
+                "reference": "4a2ae98a7db9951e981ec58777a2536341b52672"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-service-bus/sagas/zipball/716cece99620c328f4122624551971fa8ade834f",
-                "reference": "716cece99620c328f4122624551971fa8ade834f",
+                "url": "https://api.github.com/repos/php-service-bus/sagas/zipball/4a2ae98a7db9951e981ec58777a2536341b52672",
+                "reference": "4a2ae98a7db9951e981ec58777a2536341b52672",
                 "shasum": ""
             },
             "require": {
@@ -935,7 +935,7 @@
                 "messaging",
                 "sagas"
             ],
-            "time": "2019-03-25T15:03:56+00:00"
+            "time": "2019-04-01T15:20:56+00:00"
         },
         {
             "name": "php-service-bus/storage-common",
@@ -2892,16 +2892,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "8.0.5",
+            "version": "8.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "19cbed2120839772c4a00e8b28456b0c77d1a7b4"
+                "reference": "925109f8bbe6dae28fbc7bb07446a53abd3b1c25"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/19cbed2120839772c4a00e8b28456b0c77d1a7b4",
-                "reference": "19cbed2120839772c4a00e8b28456b0c77d1a7b4",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/925109f8bbe6dae28fbc7bb07446a53abd3b1c25",
+                "reference": "925109f8bbe6dae28fbc7bb07446a53abd3b1c25",
                 "shasum": ""
             },
             "require": {
@@ -2970,7 +2970,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2019-03-16T07:33:46+00:00"
+            "time": "2019-03-26T14:00:24+00:00"
         },
         {
             "name": "psr/container",
@@ -4381,16 +4381,16 @@
         },
         {
             "name": "vimeo/psalm",
-            "version": "3.2.2",
+            "version": "3.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vimeo/psalm.git",
-                "reference": "f0ddc6f3bc35ba7ecb99232903907a1d5ec1c8e8"
+                "reference": "3a11e1ff5b9539303ffdecafdc3d24c33fa81073"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vimeo/psalm/zipball/f0ddc6f3bc35ba7ecb99232903907a1d5ec1c8e8",
-                "reference": "f0ddc6f3bc35ba7ecb99232903907a1d5ec1c8e8",
+                "url": "https://api.github.com/repos/vimeo/psalm/zipball/3a11e1ff5b9539303ffdecafdc3d24c33fa81073",
+                "reference": "3a11e1ff5b9539303ffdecafdc3d24c33fa81073",
                 "shasum": ""
             },
             "require": {
@@ -4417,7 +4417,7 @@
                 "bamarni/composer-bin-plugin": "^1.2",
                 "phpunit/phpunit": "^6.0 || ^7.0",
                 "psalm/plugin-phpunit": "^0.5.1",
-                "squizlabs/php_codesniffer": "^3.0"
+                "squizlabs/php_codesniffer": "3.4.0"
             },
             "suggest": {
                 "ext-igbinary": "^2.0.5"
@@ -4457,7 +4457,7 @@
                 "inspection",
                 "php"
             ],
-            "time": "2019-03-17T22:14:30+00:00"
+            "time": "2019-03-25T20:32:36+00:00"
         },
         {
             "name": "webmozart/assert",
