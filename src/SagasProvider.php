@@ -186,7 +186,7 @@ final class SagasProvider
                 unset($saga);
 
                 throw new LoadedExpiredSaga(
-                    \sprintf('Unable to load the saga (ID: "%s") whose lifetime has expired', $id)
+                    \sprintf('Unable to load the saga (ID: "%s") whose lifetime has expired', $id->toString())
                 );
             },
             $id,

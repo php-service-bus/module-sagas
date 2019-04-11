@@ -29,7 +29,7 @@ final class CantSaveUnStartedSaga extends \LogicException
         return new self(
             \sprintf(
                 'Saga with identifier "%s:%s" not exists. Please, use start() method for saga creation',
-                (string) $saga->id(),
+                $saga->id()->toString(),
                 \get_class($saga->id())
             )
         );
