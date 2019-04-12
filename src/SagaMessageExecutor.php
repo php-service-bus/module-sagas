@@ -12,6 +12,7 @@ declare(strict_types = 1);
 
 namespace ServiceBus\Sagas\Module;
 
+use function Amp\call;
 use Amp\Promise;
 use ServiceBus\Common\Context\ServiceBusContext;
 use ServiceBus\Common\MessageExecutor\MessageExecutor;
@@ -40,6 +41,6 @@ final class SagaMessageExecutor implements MessageExecutor
      */
     public function __invoke(object $message, ServiceBusContext $context): Promise
     {
-        return ($this->messageHandler->closure)($message, $context);
+        return call($this->messageHandler->closure, $message, $context);
     }
 }
