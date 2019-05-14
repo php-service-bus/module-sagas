@@ -66,15 +66,9 @@ final class SqlSchemaCreator
                 {
                     $filePath = $this->rootDirectoryPath . $filePath;
 
-                    $rows = \file($filePath);
-
-                    if (false === \is_array($rows))
-                    {
-                        continue;
-                    }
-
+                    /** @psalm-suppress InvalidScalarArgument */
                     $queries = true === $multipleQueries
-                        ? \array_map('trim', $rows)
+                        ? \array_map('trim', (array) \file($filePath))
                         : [(string) \file_get_contents($filePath)];
 
                     foreach ($queries as $query)
