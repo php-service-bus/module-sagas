@@ -377,13 +377,16 @@ final class SagasProvider
     {
         $mutexKey = createMutexKey($id);
 
-        $mutex = $this->mutexFactory->create($mutexKey);
+        if (false === \array_key_exists($mutexKey, $this->lockCollection))
+        {
+            $mutex = $this->mutexFactory->create($mutexKey);
 
-        /**
-         * @psalm-suppress TooManyTemplateParams
-         * @psalm-suppress InvalidPropertyAssignmentValue
-         */
-        $this->lockCollection[$mutexKey] = yield $mutex->acquire();
+            /**
+             * @psalm-suppress TooManyTemplateParams
+             * @psalm-suppress InvalidPropertyAssignmentValue
+             */
+            $this->lockCollection[$mutexKey] = yield $mutex->acquire();
+        }
     }
 
     /**
