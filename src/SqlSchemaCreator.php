@@ -75,7 +75,6 @@ final class SqlSchemaCreator
                     {
                         if ('' !== $query)
                         {
-                            /** @psalm-suppress TooManyTemplateParams Wrong Promise template */
                             yield $this->adapter->execute($query);
                         }
                     }

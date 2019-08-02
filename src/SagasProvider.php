@@ -159,11 +159,7 @@ final class SagasProvider
 
                 yield from $this->setupMutex($id);
 
-                /**
-                 * @psalm-suppress TooManyTemplateParams
-                 *
-                 * @var Saga|null $saga
-                 */
+                /** @var Saga|null $saga */
                 $saga = yield $this->sagaStore->obtain($id);
 
                 if (null === $saga)
@@ -214,11 +210,7 @@ final class SagasProvider
         return call(
             function(Saga $saga, ServiceBusContext $context): \Generator
             {
-                /**
-                 * @psalm-suppress TooManyTemplateParams
-                 *
-                 * @var Saga|null $existsSaga
-                 */
+                /** @var Saga|null $existsSaga */
                 $existsSaga = yield $this->sagaStore->obtain($saga->id());
 
                 if (null !== $existsSaga)
@@ -381,10 +373,7 @@ final class SagasProvider
         {
             $mutex = $this->mutexFactory->create($mutexKey);
 
-            /**
-             * @psalm-suppress TooManyTemplateParams
-             * @psalm-suppress InvalidPropertyAssignmentValue
-             */
+            /** @psalm-suppress InvalidPropertyAssignmentValue */
             $this->lockCollection[$mutexKey] = yield $mutex->acquire();
         }
     }
