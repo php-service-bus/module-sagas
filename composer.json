@@ -42,7 +42,7 @@
   "require-dev": {
     "php-service-bus/code-style-config": "v1.2.*",
     "php-service-bus/storage-sql": "v4.0.*",
-    "symfony/dependency-injection": "v4.0.*",
+    "symfony/dependency-injection": "v5.0.*",
     "doctrine/dbal": "v2.10.*",
     "phpunit/phpunit": "v8.4.*",
     "vimeo/psalm": "v3.7.*",
