@@ -23,31 +23,19 @@ use ServiceBus\Sagas\Configuration\SagaConfigurationLoader;
  */
 final class SagaMessagesRouterConfigurator implements RouterConfigurator
 {
-    /**
-     * @var SagasProvider
-     */
-    private $sagaProvider;
+    private SagasProvider $sagaProvider;
 
-    /**
-     * @var SagaConfigurationLoader
-     */
-    private $sagaConfigurationLoader;
+    private SagaConfigurationLoader $sagaConfigurationLoader;
 
     /**
      * List of registered services.
      *
      * @psalm-var array<array-key, string>
-     *
-     * @var array
      */
-    private $sagasList;
+    private array $sagasList;
 
     /**
      * @psalm-param array<array-key, string> $sagasList
-     *
-     * @param SagasProvider           $sagaProvider
-     * @param SagaConfigurationLoader $sagaConfigurationLoader
-     * @param array                   $sagasList
      */
     public function __construct(SagasProvider $sagaProvider, SagaConfigurationLoader $sagaConfigurationLoader, array $sagasList)
     {
@@ -68,11 +56,7 @@ final class SagaMessagesRouterConfigurator implements RouterConfigurator
             {
                 $sagaConfiguration = $this->sagaConfigurationLoader->load($sagaClass);
 
-                /**
-                 * Append metadata details.
-                 *
-                 * @noinspection PhpUnhandledExceptionInspection
-                 */
+                /** Append metadata details.  */
                 invokeReflectionMethod(
                     $this->sagaProvider,
                     'appendMetaData',
@@ -83,7 +67,6 @@ final class SagaMessagesRouterConfigurator implements RouterConfigurator
                 /** @var \ServiceBus\Common\MessageHandler\MessageHandler $handler */
                 foreach ($sagaConfiguration->handlerCollection as $handler)
                 {
-                    /** @noinspection PhpUnhandledExceptionInspection */
                     $router->registerListener((string) $handler->messageClass, new SagaMessageExecutor($handler));
                 }
             }

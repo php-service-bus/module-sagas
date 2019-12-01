@@ -35,17 +35,9 @@ use ServiceBus\Sagas\Store\SagasStore;
  */
 final class SagasProvider
 {
-    /**
-     * Sagas store.
-     *
-     * @var SagasStore
-     */
-    private $sagaStore;
+    private SagasStore $sagaStore;
 
-    /**
-     * @var MutexFactory
-     */
-    private $mutexFactory;
+    private MutexFactory $mutexFactory;
 
     /**
      * Sagas meta data.
@@ -54,21 +46,15 @@ final class SagasProvider
      *
      * @var \ServiceBus\Sagas\Configuration\SagaMetadata[]
      */
-    private $sagaMetaDataCollection = [];
+    private array $sagaMetaDataCollection = [];
 
     /**
      * @psalm-var array<string, \ServiceBus\Mutex\Lock>
      *
      * @var Lock[]
      */
-    private $lockCollection = [];
+    private array $lockCollection = [];
 
-    /**
-     * SagasProvider constructor.
-     *
-     * @param SagasStore        $sagaStore
-     * @param MutexFactory|null $mutexFactory
-     */
     public function __construct(SagasStore $sagaStore, ?MutexFactory $mutexFactory = null)
     {
         $this->sagaStore    = $sagaStore;
@@ -87,12 +73,7 @@ final class SagasProvider
     /**
      * Start a new saga.
      *
-     * @noinspection   PhpDocRedundantThrowsInspection
      * @psalm-suppress MixedTypeCoercion
-     *
-     * @param SagaId            $id
-     * @param object            $command
-     * @param ServiceBusContext $context
      *
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagasStoreInteractionFailed Database interaction error
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagaSerializationError Error while serializing saga
@@ -105,7 +86,7 @@ final class SagasProvider
     {
         /** @psalm-suppress InvalidArgument */
         return call(
-            function(SagaId $id, object $command, ServiceBusContext $context): \Generator
+            function (SagaId $id, object $command, ServiceBusContext $context): \Generator
             {
                 yield from $this->setupMutex($id);
 
@@ -136,11 +117,7 @@ final class SagasProvider
     /**
      * Load saga.
      *
-     * @noinspection   PhpDocRedundantThrowsInspection
      * @psalm-suppress MixedTypeCoercion
-     *
-     * @param SagaId            $id
-     * @param ServiceBusContext $context
      *
      * @throws \ServiceBus\Sagas\Store\Exceptions\LoadedExpiredSaga Expired saga loaded
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagasStoreInteractionFailed Database interaction error
@@ -152,7 +129,7 @@ final class SagasProvider
     {
         /** @psalm-suppress InvalidArgument */
         return call(
-            function(SagaId $id, ServiceBusContext $context): \Generator
+            function (SagaId $id, ServiceBusContext $context): \Generator
             {
                 /** @var \DateTimeImmutable $currentDatetime */
                 $currentDatetime = datetimeInstantiator('NOW');
@@ -193,11 +170,6 @@ final class SagasProvider
     /**
      * Save\update a saga.
      *
-     * @noinspection PhpDocRedundantThrowsInspection
-     *
-     * @param Saga              $saga
-     * @param ServiceBusContext $context
-     *
      * @throws \ServiceBus\Sagas\Module\Exceptions\CantSaveUnStartedSaga Attempt to save un-started saga
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagasStoreInteractionFailed Database interaction error
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagaSerializationError Error while serializing saga
@@ -208,7 +180,7 @@ final class SagasProvider
     {
         /** @psalm-suppress InvalidArgument */
         return call(
-            function(Saga $saga, ServiceBusContext $context): \Generator
+            function (Saga $saga, ServiceBusContext $context): \Generator
             {
                 /** @var Saga|null $existsSaga */
                 $existsSaga = yield $this->sagaStore->obtain($saga->id());
@@ -232,11 +204,6 @@ final class SagasProvider
     /**
      * Close expired saga.
      *
-     * @noinspection PhpDocMissingThrowsInspection
-     *
-     * @param Saga              $saga
-     * @param ServiceBusContext $context
-     *
      * @throws \ServiceBus\Sagas\Module\Exceptions\CantSaveUnStartedSaga Attempt to save un-started saga
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagasStoreInteractionFailed Database interaction error
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagaSerializationError Error while serializing saga
@@ -245,16 +212,11 @@ final class SagasProvider
      */
     private function doCloseExpired(Saga $saga, ServiceBusContext $context): \Generator
     {
-        /**
-         * @noinspection PhpUnhandledExceptionInspection
-         *
-         * @var \ServiceBus\Sagas\SagaStatus $currentStatus
-         */
+        /** @var \ServiceBus\Sagas\SagaStatus $currentStatus */
         $currentStatus = readReflectionPropertyValue($saga, 'status');
 
         if (true === $currentStatus->inProgress())
         {
-            /** @noinspection PhpUnhandledExceptionInspection */
             invokeReflectionMethod($saga, 'makeExpired');
 
             yield $this->save($saga, $context);
@@ -264,22 +226,13 @@ final class SagasProvider
     /**
      * Execute add/update saga entry.
      *
-     * @noinspection PhpDocMissingThrowsInspection
-     *
-     * @param Saga              $saga
-     * @param ServiceBusContext $context
-     * @param bool              $isNew
-     *
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagaSerializationError Error while serializing saga
      * @throws \ServiceBus\Sagas\Store\Exceptions\DuplicateSaga The specified saga has already been added
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagasStoreInteractionFailed Database interaction error
-     *
-     * @return \Generator
      */
     private function doStore(Saga $saga, ServiceBusContext $context, bool $isNew): \Generator
     {
         /**
-         * @noinspection PhpUnhandledExceptionInspection
          * @psalm-var    array<int, object> $commands
          *
          * @var object[] $commands
@@ -287,7 +240,6 @@ final class SagasProvider
         $commands = invokeReflectionMethod($saga, 'firedCommands');
 
         /**
-         * @noinspection PhpUnhandledExceptionInspection
          * @psalm-var    array<int, object> $events
          *
          * @var object[] $events
@@ -324,11 +276,7 @@ final class SagasProvider
     /**
      * Receive saga meta data information.
      *
-     * @param string $sagaClass
-     *
      * @throws \ServiceBus\Sagas\Module\Exceptions\SagaMetaDataNotFound
-     *
-     * @return SagaMetadata
      */
     private function extractSagaMetaData(string $sagaClass): SagaMetadata
     {
@@ -346,11 +294,6 @@ final class SagasProvider
      *
      * @noinspection PhpUnusedPrivateMethodInspection
      *
-     * @param string       $sagaClass
-     * @param SagaMetadata $metadata
-     *
-     * @return void
-     *
      * @see          SagaMessagesRouterConfigurator::registerRoutes
      */
     private function appendMetaData(string $sagaClass, SagaMetadata $metadata): void
@@ -360,10 +303,6 @@ final class SagasProvider
 
     /**
      * Setup mutes on saga.
-     *
-     * @param SagaId $id
-     *
-     * @return \Generator
      */
     private function setupMutex(SagaId $id): \Generator
     {
@@ -380,10 +319,6 @@ final class SagasProvider
 
     /**
      * Remove lock from saga.
-     *
-     * @param SagaId $id
-     *
-     * @return \Generator
      */
     private function releaseMutex(SagaId $id): \Generator
     {

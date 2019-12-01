@@ -19,11 +19,6 @@ use ServiceBus\Sagas\Saga;
  */
 final class CantSaveUnStartedSaga extends \LogicException
 {
-    /**
-     * @param Saga $saga
-     *
-     * @return self
-     */
     public static function create(Saga $saga): self
     {
         return new self(

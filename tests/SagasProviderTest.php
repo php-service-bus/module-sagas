@@ -41,20 +41,11 @@ use Symfony\Component\DependencyInjection\Reference;
  */
 final class SagasProviderTest extends TestCase
 {
-    /**
-     * @var ContainerBuilder
-     */
-    private $containerBuilder;
+    private ContainerBuilder $containerBuilder;
 
-    /**
-     * @var DatabaseAdapter
-     */
-    private $adapter;
+    private DatabaseAdapter $adapter;
 
-    /**
-     * @var SagasProvider
-     */
-    private $sagaProvider;
+    private SagasProvider $sagaProvider;
 
     /**
      * {@inheritdoc}
@@ -116,8 +107,6 @@ final class SagasProviderTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function updateNonexistentSaga(): void
     {
@@ -127,7 +116,7 @@ final class SagasProviderTest extends TestCase
 
         wait(
             call(
-                static function() use ($sagaProvider): \Generator
+                static function () use ($sagaProvider): \Generator
                 {
                     $testSaga = new TestSaga(TestSagaId::new(TestSaga::class));
 
@@ -141,8 +130,6 @@ final class SagasProviderTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function startWithoutMetadata(): void
     {
@@ -152,7 +139,7 @@ final class SagasProviderTest extends TestCase
 
         wait(
             call(
-                static function() use ($sagaProvider): \Generator
+                static function () use ($sagaProvider): \Generator
                 {
                     $id = TestSagaId::new(TestSaga::class);
 
@@ -166,8 +153,6 @@ final class SagasProviderTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function start(): void
     {
@@ -177,7 +162,7 @@ final class SagasProviderTest extends TestCase
 
         wait(
             call(
-                static function() use ($sagaProvider): \Generator
+                static function () use ($sagaProvider): \Generator
                 {
                     $id = TestSagaId::new(TestSaga::class);
 
@@ -196,8 +181,6 @@ final class SagasProviderTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function startDuplicate(): void
     {
@@ -209,7 +192,7 @@ final class SagasProviderTest extends TestCase
 
         wait(
             call(
-                static function() use ($sagaProvider): \Generator
+                static function () use ($sagaProvider): \Generator
                 {
                     $id = TestSagaId::new(TestSaga::class);
 
@@ -224,8 +207,6 @@ final class SagasProviderTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function startWithoutSchema(): void
     {
@@ -237,7 +218,7 @@ final class SagasProviderTest extends TestCase
 
         wait(
             call(
-                static function() use ($sagaProvider, $databaseAdapter, $containerBuilder): \Generator
+                static function () use ($sagaProvider, $databaseAdapter, $containerBuilder): \Generator
                 {
                     yield $databaseAdapter->execute('DROP TABLE sagas_store');
 
@@ -253,8 +234,6 @@ final class SagasProviderTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function obtainWithoutSchema(): void
     {
@@ -267,7 +246,7 @@ final class SagasProviderTest extends TestCase
 
         wait(
             call(
-                static function() use ($sagaProvider, $databaseAdapter): \Generator
+                static function () use ($sagaProvider, $databaseAdapter): \Generator
                 {
                     yield $databaseAdapter->execute('DROP TABLE sagas_store');
                     yield $sagaProvider->obtain(TestSagaId::new(TestSaga::class), new Context());
@@ -280,8 +259,6 @@ final class SagasProviderTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function saveWithoutSchema(): void
     {
@@ -292,7 +269,7 @@ final class SagasProviderTest extends TestCase
 
         wait(
             call(
-                static function() use ($sagaProvider, $databaseAdapter): \Generator
+                static function () use ($sagaProvider, $databaseAdapter): \Generator
                 {
                     yield $databaseAdapter->execute('DROP TABLE sagas_store');
 
@@ -308,8 +285,6 @@ final class SagasProviderTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function obtainNonexistentSaga(): void
     {
@@ -317,7 +292,7 @@ final class SagasProviderTest extends TestCase
 
         wait(
             call(
-                static function() use ($sagaProvider): \Generator
+                static function () use ($sagaProvider): \Generator
                 {
                     static::assertNull(
                         yield $sagaProvider->obtain(TestSagaId::new(TestSaga::class), new Context())
@@ -331,8 +306,6 @@ final class SagasProviderTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function obtainExpiredSaga(): void
     {
@@ -344,7 +317,7 @@ final class SagasProviderTest extends TestCase
 
         wait(
             call(
-                static function() use ($sagaProvider): \Generator
+                static function () use ($sagaProvider): \Generator
                 {
                     $context = new Context();
                     $id      = TestSagaId::new(TestSaga::class);
@@ -365,8 +338,6 @@ final class SagasProviderTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function obtain(): void
     {
@@ -376,7 +347,7 @@ final class SagasProviderTest extends TestCase
 
         wait(
             call(
-                static function() use ($sagaProvider): \Generator
+                static function () use ($sagaProvider): \Generator
                 {
                     $context = new Context();
                     $id      = TestSagaId::new(TestSaga::class);

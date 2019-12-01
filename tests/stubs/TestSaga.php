@@ -34,9 +34,6 @@ final class TestSaga extends Saga
 
     /**
      * @throws \ServiceBus\Sagas\Exceptions\ChangeSagaStateFailed
-     *
-     * @return void
-     *
      */
     public function doSomething(): void
     {
@@ -48,12 +45,7 @@ final class TestSaga extends Saga
      *
      * @SagaEventListener()
      *
-     * @param EmptyEvent $event
-     *
      * @throws \ServiceBus\Sagas\Exceptions\ChangeSagaStateFailed
-     *
-     * @return void
-     *
      */
     private function onEmptyEvent(/** @noinspection PhpUnusedParameterInspection */
         EmptyEvent $event

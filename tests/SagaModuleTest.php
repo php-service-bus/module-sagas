@@ -30,10 +30,7 @@ use Symfony\Component\DependencyInjection\Reference;
  */
 final class SagaModuleTest extends TestCase
 {
-    /**
-     * @var ContainerBuilder
-     */
-    private $containerBuilder;
+    private ContainerBuilder $containerBuilder;
 
     /**
      * {@inheritdoc}
@@ -65,8 +62,6 @@ final class SagaModuleTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function withSqlStorage(): void
     {
@@ -95,8 +90,6 @@ final class SagaModuleTest extends TestCase
      * @test
      *
      * @throws \Throwable
-     *
-     * @return void
      */
     public function withCustomStore(): void
     {

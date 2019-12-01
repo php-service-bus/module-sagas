@@ -23,14 +23,8 @@ use ServiceBus\Common\MessageHandler\MessageHandler;
  */
 final class SagaMessageExecutor implements MessageExecutor
 {
-    /**
-     * @var MessageHandler
-     */
-    private $messageHandler;
+    private MessageHandler $messageHandler;
 
-    /**
-     * @param MessageHandler $messageHandler
-     */
     public function __construct(MessageHandler $messageHandler)
     {
         $this->messageHandler = $messageHandler;

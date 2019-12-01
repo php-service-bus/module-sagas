@@ -17,11 +17,6 @@ namespace ServiceBus\Sagas\Module\Exceptions;
  */
 final class SagaMetaDataNotFound extends \RuntimeException
 {
-    /**
-     * @param string $sagaClass
-     *
-     * @return self
-     */
     public static function create(string $sagaClass): self
     {
         return new self(
