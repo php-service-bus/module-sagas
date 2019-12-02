@@ -73,14 +73,12 @@ final class SagasProvider
     /**
      * Start a new saga.
      *
-     * @psalm-suppress MixedTypeCoercion
+     * Returns \ServiceBus\Sagas\Saga
      *
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagasStoreInteractionFailed Database interaction error
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagaSerializationError Error while serializing saga
      * @throws \ServiceBus\Sagas\Module\Exceptions\SagaMetaDataNotFound
      * @throws \ServiceBus\Sagas\Store\Exceptions\DuplicateSaga The specified saga has already been added
-     *
-     * @return Promise<\ServiceBus\Sagas\Saga>
      */
     public function start(SagaId $id, object $command, ServiceBusContext $context): Promise
     {
@@ -117,13 +115,11 @@ final class SagasProvider
     /**
      * Load saga.
      *
-     * @psalm-suppress MixedTypeCoercion
+     * Returns \ServiceBus\Sagas\Saga|null
      *
      * @throws \ServiceBus\Sagas\Store\Exceptions\LoadedExpiredSaga Expired saga loaded
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagasStoreInteractionFailed Database interaction error
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagaSerializationError Error while deserializing saga
-     *
-     * @return Promise<\ServiceBus\Sagas\Saga|null>
      */
     public function obtain(SagaId $id, ServiceBusContext $context): Promise
     {
@@ -173,8 +169,6 @@ final class SagasProvider
      * @throws \ServiceBus\Sagas\Module\Exceptions\CantSaveUnStartedSaga Attempt to save un-started saga
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagasStoreInteractionFailed Database interaction error
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagaSerializationError Error while serializing saga
-     *
-     * @return Promise  It doesn't return any result
      */
     public function save(Saga $saga, ServiceBusContext $context): Promise
     {
@@ -207,8 +201,6 @@ final class SagasProvider
      * @throws \ServiceBus\Sagas\Module\Exceptions\CantSaveUnStartedSaga Attempt to save un-started saga
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagasStoreInteractionFailed Database interaction error
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagaSerializationError Error while serializing saga
-     *
-     * @return \Generator It does not return any result
      */
     private function doCloseExpired(Saga $saga, ServiceBusContext $context): \Generator
     {

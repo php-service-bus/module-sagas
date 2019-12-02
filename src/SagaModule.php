@@ -12,10 +12,10 @@ declare(strict_types = 1);
 
 namespace ServiceBus\Sagas\Module;
 
+use ServiceBus\AnnotationsReader\Reader;
 use function ServiceBus\Common\canonicalizeFilesPath;
 use function ServiceBus\Common\extractNamespaceFromFile;
 use function ServiceBus\Common\searchFiles;
-use ServiceBus\AnnotationsReader\AnnotationsReader;
 use ServiceBus\Common\Module\ServiceBusModule;
 use ServiceBus\MessagesRouter\ChainRouterConfigurator;
 use ServiceBus\MessagesRouter\Router;
@@ -65,7 +65,7 @@ final class SagaModule implements ServiceBusModule
             throw new \LogicException('The component "php-service-bus/storage-sql" was not installed');
         }
 
-        if (null === $configurationLoaderServiceId && false === \interface_exists(AnnotationsReader::class))
+        if (null === $configurationLoaderServiceId && false === \interface_exists(Reader::class))
         {
             throw new \LogicException('The component "php-service-bus/annotations-reader" was not installed');
         }
@@ -88,7 +88,7 @@ final class SagaModule implements ServiceBusModule
         string $databaseAdapterServiceId,
         ?string $configurationLoaderServiceId = null
     ): self {
-        if (null === $configurationLoaderServiceId && false === \interface_exists(AnnotationsReader::class))
+        if (null === $configurationLoaderServiceId && false === \interface_exists(Reader::class))
         {
             throw new \LogicException('The component "php-service-bus/annotations-reader" was not installed');
         }

@@ -42,7 +42,6 @@ final class SqlSchemaCreator
      */
     public function import(): Promise
     {
-        /** @psalm-suppress InvalidArgument Incorrect psalm unpack parameters (...$args) */
         return call(
             function (array $fixtures): \Generator
             {
