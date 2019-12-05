@@ -27,9 +27,11 @@ final class SqlSchemaCreator
         '/src/Store/Sql/schema/indexes.sql'     => true,
     ];
 
-    private DatabaseAdapter $adapter;
+    /** @var DatabaseAdapter */
+    private $adapter;
 
-    private string $rootDirectoryPath;
+    /** @var string */
+    private $rootDirectoryPath;
 
     public function __construct(DatabaseAdapter $adapter, string $rootDirectoryPath)
     {

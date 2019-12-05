@@ -35,9 +35,11 @@ use ServiceBus\Sagas\Store\SagasStore;
  */
 final class SagasProvider
 {
-    private SagasStore $sagaStore;
+    /** @var SagasStore */
+    private $sagaStore;
 
-    private MutexFactory $mutexFactory;
+    /** @var MutexFactory */
+    private $mutexFactory;
 
     /**
      * Sagas meta data.
@@ -46,14 +48,14 @@ final class SagasProvider
      *
      * @var \ServiceBus\Sagas\Configuration\SagaMetadata[]
      */
-    private array $sagaMetaDataCollection = [];
+    private $sagaMetaDataCollection = [];
 
     /**
      * @psalm-var array<string, \ServiceBus\Mutex\Lock>
      *
      * @var Lock[]
      */
-    private array $lockCollection = [];
+    private $lockCollection = [];
 
     public function __construct(SagasStore $sagaStore, ?MutexFactory $mutexFactory = null)
     {

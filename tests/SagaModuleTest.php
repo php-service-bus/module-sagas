@@ -30,7 +30,8 @@ use Symfony\Component\DependencyInjection\Reference;
  */
 final class SagaModuleTest extends TestCase
 {
-    private ContainerBuilder $containerBuilder;
+    /** @var ContainerBuilder */
+    private $containerBuilder;
 
     /**
      * {@inheritdoc}

@@ -38,16 +38,21 @@ use Symfony\Component\DependencyInjection\Reference;
  */
 final class SagaModule implements ServiceBusModule
 {
-    private string $sagaStoreServiceId;
+    /** @var string */
+    private $sagaStoreServiceId;
 
-    private string $databaseAdapterServiceId;
+    /** @var string */
+    private $databaseAdapterServiceId;
 
     /**
      * @psalm-var array<array-key, class-string<\ServiceBus\Sagas\Saga>>
+     *
+     * @var array
      */
-    private array $sagasToRegister = [];
+    private $sagasToRegister = [];
 
-    private ?string $configurationLoaderServiceId = null;
+    /** @var string|null */
+    private $configurationLoaderServiceId = null;
 
     /**
      * @param string|null $configurationLoaderServiceId If not specified, the default annotation-based configurator

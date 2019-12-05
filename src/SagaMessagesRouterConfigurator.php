@@ -23,16 +23,20 @@ use ServiceBus\Sagas\Configuration\SagaConfigurationLoader;
  */
 final class SagaMessagesRouterConfigurator implements RouterConfigurator
 {
-    private SagasProvider $sagaProvider;
+    /** @var SagasProvider */
+    private $sagaProvider;
 
-    private SagaConfigurationLoader $sagaConfigurationLoader;
+    /** @var SagaConfigurationLoader */
+    private $sagaConfigurationLoader;
 
     /**
      * List of registered services.
      *
      * @psalm-var array<array-key, string>
+     *
+     * @var array
      */
-    private array $sagasList;
+    private $sagasList;
 
     /**
      * @psalm-param array<array-key, string> $sagasList

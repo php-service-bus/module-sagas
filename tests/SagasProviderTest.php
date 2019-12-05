@@ -41,11 +41,14 @@ use Symfony\Component\DependencyInjection\Reference;
  */
 final class SagasProviderTest extends TestCase
 {
-    private ContainerBuilder $containerBuilder;
+    /** @var ContainerBuilder */
+    private $containerBuilder;
 
-    private DatabaseAdapter $adapter;
+    /** @var DatabaseAdapter */
+    private $adapter;
 
-    private SagasProvider $sagaProvider;
+    /** @var SagasProvider */
+    private $sagaProvider;
 
     /**
      * {@inheritdoc}
@@ -108,22 +111,13 @@ final class SagasProviderTest extends TestCase
      *
      * @throws \Throwable
      */
-    public function updateNonexistentSaga(): void
+    public function updateNonexistentSaga(): \Generator
     {
         $this->expectException(CantSaveUnStartedSaga::class);
 
-        $sagaProvider = $this->sagaProvider;
+        $testSaga = new TestSaga(TestSagaId::new(TestSaga::class));
 
-        wait(
-            call(
-                static function () use ($sagaProvider): \Generator
-                {
-                    $testSaga = new TestSaga(TestSagaId::new(TestSaga::class));
-
-                    yield $sagaProvider->save($testSaga, new Context());
-                }
-            )
-        );
+        yield $this->sagaProvider->save($testSaga, new Context());
     }
 
     /**
@@ -131,22 +125,13 @@ final class SagasProviderTest extends TestCase
      *
      * @throws \Throwable
      */
-    public function startWithoutMetadata(): void
+    public function startWithoutMetadata(): \Generator
     {
         $this->expectException(SagaMetaDataNotFound::class);
 
-        $sagaProvider = $this->sagaProvider;
+        $id = TestSagaId::new(TestSaga::class);
 
-        wait(
-            call(
-                static function () use ($sagaProvider): \Generator
-                {
-                    $id = TestSagaId::new(TestSaga::class);
-
-                    yield $sagaProvider->start($id, new TestCommand(), new Context());
-                }
-            )
-        );
+        yield $this->sagaProvider->start($id, new TestCommand(), new Context());
     }
 
     /**
@@ -154,27 +139,18 @@ final class SagasProviderTest extends TestCase
      *
      * @throws \Throwable
      */
-    public function start(): void
+    public function start(): \Generator
     {
         $this->containerBuilder->get(Router::class);
 
-        $sagaProvider = $this->sagaProvider;
+        $id = TestSagaId::new(TestSaga::class);
 
-        wait(
-            call(
-                static function () use ($sagaProvider): \Generator
-                {
-                    $id = TestSagaId::new(TestSaga::class);
+        /** @var Saga $saga */
+        $saga = yield $this->sagaProvider->start($id, new TestCommand(), new Context());
 
-                    /** @var Saga $saga */
-                    $saga = yield $sagaProvider->start($id, new TestCommand(), new Context());
-
-                    static::assertNotNull($saga);
-                    static::assertInstanceOf(TestSaga::class, $saga);
-                    static::assertSame($id, $saga->id());
-                }
-            )
-        );
+        static::assertNotNull($saga);
+        static::assertInstanceOf(TestSaga::class, $saga);
+        static::assertSame($id, $saga->id());
     }
 
     /**
@@ -182,25 +158,16 @@ final class SagasProviderTest extends TestCase
      *
      * @throws \Throwable
      */
-    public function startDuplicate(): void
+    public function startDuplicate(): \Generator
     {
         $this->expectException(DuplicateSaga::class);
 
         $this->containerBuilder->get(Router::class);
 
-        $sagaProvider = $this->sagaProvider;
+        $id = TestSagaId::new(TestSaga::class);
 
-        wait(
-            call(
-                static function () use ($sagaProvider): \Generator
-                {
-                    $id = TestSagaId::new(TestSaga::class);
-
-                    yield $sagaProvider->start($id, new TestCommand(), new Context());
-                    yield $sagaProvider->start($id, new TestCommand(), new Context());
-                }
-            )
-        );
+        yield $this->sagaProvider->start($id, new TestCommand(), new Context());
+        yield $this->sagaProvider->start($id, new TestCommand(), new Context());
     }
 
     /**
@@ -208,26 +175,15 @@ final class SagasProviderTest extends TestCase
      *
      * @throws \Throwable
      */
-    public function startWithoutSchema(): void
+    public function startWithoutSchema(): \Generator
     {
         $this->expectException(SagasStoreInteractionFailed::class);
 
-        $sagaProvider     = $this->sagaProvider;
-        $databaseAdapter  = $this->adapter;
-        $containerBuilder = $this->containerBuilder;
+        yield $this->adapter->execute('DROP TABLE sagas_store');
 
-        wait(
-            call(
-                static function () use ($sagaProvider, $databaseAdapter, $containerBuilder): \Generator
-                {
-                    yield $databaseAdapter->execute('DROP TABLE sagas_store');
+        $this->containerBuilder->get(Router::class);
 
-                    $containerBuilder->get(Router::class);
-
-                    yield $sagaProvider->start(TestSagaId::new(TestSaga::class), new TestCommand(), new Context());
-                }
-            )
-        );
+        yield $this->sagaProvider->start(TestSagaId::new(TestSaga::class), new TestCommand(), new Context());
     }
 
     /**
@@ -235,24 +191,14 @@ final class SagasProviderTest extends TestCase
      *
      * @throws \Throwable
      */
-    public function obtainWithoutSchema(): void
+    public function obtainWithoutSchema(): \Generator
     {
         $this->expectException(SagasStoreInteractionFailed::class);
 
         $this->containerBuilder->get(Router::class);
 
-        $sagaProvider    = $this->sagaProvider;
-        $databaseAdapter = $this->adapter;
-
-        wait(
-            call(
-                static function () use ($sagaProvider, $databaseAdapter): \Generator
-                {
-                    yield $databaseAdapter->execute('DROP TABLE sagas_store');
-                    yield $sagaProvider->obtain(TestSagaId::new(TestSaga::class), new Context());
-                }
-            )
-        );
+        yield $this->adapter->execute('DROP TABLE sagas_store');
+        yield $this->sagaProvider->obtain(TestSagaId::new(TestSaga::class), new Context());
     }
 
     /**
@@ -260,25 +206,15 @@ final class SagasProviderTest extends TestCase
      *
      * @throws \Throwable
      */
-    public function saveWithoutSchema(): void
+    public function saveWithoutSchema(): \Generator
     {
         $this->expectException(SagasStoreInteractionFailed::class);
 
-        $sagaProvider    = $this->sagaProvider;
-        $databaseAdapter = $this->adapter;
+        yield $this->adapter->execute('DROP TABLE sagas_store');
 
-        wait(
-            call(
-                static function () use ($sagaProvider, $databaseAdapter): \Generator
-                {
-                    yield $databaseAdapter->execute('DROP TABLE sagas_store');
+        $testSaga = new TestSaga(TestSagaId::new(TestSaga::class));
 
-                    $testSaga = new TestSaga(TestSagaId::new(TestSaga::class));
-
-                    yield $sagaProvider->save($testSaga, new Context());
-                }
-            )
-        );
+        yield $this->sagaProvider->save($testSaga, new Context());
     }
 
     /**
@@ -286,19 +222,10 @@ final class SagasProviderTest extends TestCase
      *
      * @throws \Throwable
      */
-    public function obtainNonexistentSaga(): void
+    public function obtainNonexistentSaga(): \Generator
     {
-        $sagaProvider = $this->sagaProvider;
-
-        wait(
-            call(
-                static function () use ($sagaProvider): \Generator
-                {
-                    static::assertNull(
-                        yield $sagaProvider->obtain(TestSagaId::new(TestSaga::class), new Context())
-                    );
-                }
-            )
+        static::assertNull(
+            yield $this->sagaProvider->obtain(TestSagaId::new(TestSaga::class), new Context())
         );
     }
 
@@ -307,31 +234,22 @@ final class SagasProviderTest extends TestCase
      *
      * @throws \Throwable
      */
-    public function obtainExpiredSaga(): void
+    public function obtainExpiredSaga(): \Generator
     {
         $this->expectException(LoadedExpiredSaga::class);
 
         $this->containerBuilder->get(Router::class);
 
-        $sagaProvider = $this->sagaProvider;
+        $context = new Context();
+        $id      = TestSagaId::new(TestSaga::class);
 
-        wait(
-            call(
-                static function () use ($sagaProvider): \Generator
-                {
-                    $context = new Context();
-                    $id      = TestSagaId::new(TestSaga::class);
+        /** @var Saga $saga */
+        $saga = yield $this->sagaProvider->start($id, new TestCommand(), $context);
 
-                    /** @var Saga $saga */
-                    $saga = yield $sagaProvider->start($id, new TestCommand(), $context);
+        writeReflectionPropertyValue($saga, 'expireDate', new \DateTimeImmutable('-1 hours'));
 
-                    writeReflectionPropertyValue($saga, 'expireDate', new \DateTimeImmutable('-1 hours'));
-
-                    yield $sagaProvider->save($saga, $context);
-                    yield $sagaProvider->obtain($id, $context);
-                }
-            )
-        );
+        yield $this->sagaProvider->save($saga, $context);
+        yield $this->sagaProvider->obtain($id, $context);
     }
 
     /**
@@ -339,30 +257,21 @@ final class SagasProviderTest extends TestCase
      *
      * @throws \Throwable
      */
-    public function obtain(): void
+    public function obtain(): \Generator
     {
         $this->containerBuilder->get(Router::class);
 
-        $sagaProvider = $this->sagaProvider;
+        $context = new Context();
+        $id      = TestSagaId::new(TestSaga::class);
 
-        wait(
-            call(
-                static function () use ($sagaProvider): \Generator
-                {
-                    $context = new Context();
-                    $id      = TestSagaId::new(TestSaga::class);
+        /** @var Saga $saga */
+        $saga = yield $this->sagaProvider->start($id, new TestCommand(), $context);
 
-                    /** @var Saga $saga */
-                    $saga = yield $sagaProvider->start($id, new TestCommand(), $context);
+        yield $this->sagaProvider->save($saga, $context);
 
-                    yield $sagaProvider->save($saga, $context);
+        /** @var Saga $loadedSaga */
+        $loadedSaga = yield $this->sagaProvider->obtain($id, $context);
 
-                    /** @var Saga $loadedSaga */
-                    $loadedSaga = yield $sagaProvider->obtain($id, $context);
-
-                    static::assertSame($saga->id()->id, $loadedSaga->id()->id);
-                }
-            )
-        );
+        static::assertSame($saga->id()->id, $loadedSaga->id()->id);
     }
 }

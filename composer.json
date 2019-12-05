@@ -34,7 +34,7 @@
     }
   },
   "require": {
-    "php": ">=7.4",
+    "php": ">=7.3",
     "php-service-bus/sagas": "v4.0.*",
     "php-service-bus/annotations-reader": "v4.0.*",
     "php-service-bus/messages-router": "v4.0.*"
