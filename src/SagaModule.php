@@ -199,10 +199,7 @@ final class SagaModule implements ServiceBusModule
     {
         if (false === $containerBuilder->hasDefinition(MutexFactory::class))
         {
-            $containerBuilder->setDefinition(
-                MutexFactory::class,
-                new Definition(InMemoryMutexFactory::class)
-            );
+            $containerBuilder->setDefinition(MutexFactory::class, new Definition(InMemoryMutexFactory::class));
         }
     }
 
@@ -210,10 +207,7 @@ final class SagaModule implements ServiceBusModule
     {
         if (false === $containerBuilder->hasDefinition(ChainRouterConfigurator::class))
         {
-            $containerBuilder->setDefinition(
-                ChainRouterConfigurator::class,
-                new Definition(ChainRouterConfigurator::class)
-            );
+            $containerBuilder->setDefinition(ChainRouterConfigurator::class, new Definition(ChainRouterConfigurator::class));
         }
 
         $routerConfiguratorDefinition = $containerBuilder->getDefinition(ChainRouterConfigurator::class);
