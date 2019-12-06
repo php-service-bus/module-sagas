@@ -65,7 +65,6 @@ final class SagasProvider
 
     public function __destruct()
     {
-        /** @var \ServiceBus\Mutex\Lock $lock */
         foreach ($this->lockCollection as $lock)
         {
             yield $lock->release();
