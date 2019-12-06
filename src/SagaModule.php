@@ -199,9 +199,10 @@ final class SagaModule implements ServiceBusModule
     {
         if (false === $containerBuilder->hasDefinition(MutexFactory::class))
         {
-            $containerBuilder->addDefinitions([
-                MutexFactory::class => new Definition(InMemoryMutexFactory::class),
-            ]);
+            $containerBuilder->setDefinition(
+                MutexFactory::class,
+                new Definition(InMemoryMutexFactory::class)
+            );
         }
     }
 
@@ -209,10 +210,9 @@ final class SagaModule implements ServiceBusModule
     {
         if (false === $containerBuilder->hasDefinition(ChainRouterConfigurator::class))
         {
-            $containerBuilder->addDefinitions(
-                [
-                    ChainRouterConfigurator::class => new Definition(ChainRouterConfigurator::class),
-                ]
+            $containerBuilder->setDefinition(
+                ChainRouterConfigurator::class,
+                new Definition(ChainRouterConfigurator::class)
             );
         }
 
@@ -220,7 +220,7 @@ final class SagaModule implements ServiceBusModule
 
         if (false === $containerBuilder->hasDefinition(Router::class))
         {
-            $containerBuilder->addDefinitions([Router::class => new Definition(Router::class)]);
+            $containerBuilder->setDefinition(Router::class, new Definition(Router::class));
         }
 
         $routerDefinition = $containerBuilder->getDefinition(Router::class);
@@ -235,7 +235,7 @@ final class SagaModule implements ServiceBusModule
                 '%service_bus.sagas.list%',
             ]);
 
-        $containerBuilder->addDefinitions([SagaMessagesRouterConfigurator::class => $sagaRoutingConfiguratorDefinition]);
+        $containerBuilder->setDefinition(SagaMessagesRouterConfigurator::class, $sagaRoutingConfiguratorDefinition);
 
         $routerConfiguratorDefinition->addMethodCall(
             'addConfigurator',
@@ -253,7 +253,7 @@ final class SagaModule implements ServiceBusModule
                 ]
             );
 
-        $containerBuilder->addDefinitions([SagasProvider::class => $sagasProviderDefinition]);
+        $containerBuilder->setDefinition(SagasProvider::class, $sagasProviderDefinition);
     }
 
     private function registerSagaStore(ContainerBuilder $containerBuilder): void
@@ -266,7 +266,7 @@ final class SagaModule implements ServiceBusModule
         $sagaStoreDefinition = (new Definition($this->sagaStoreServiceId))
             ->setArguments([new Reference($this->databaseAdapterServiceId)]);
 
-        $containerBuilder->addDefinitions([SagasStore::class => $sagaStoreDefinition]);
+        $containerBuilder->setDefinition(SagasStore::class, $sagaStoreDefinition);
     }
 
     private function registerDefaultConfigurationLoader(ContainerBuilder $containerBuilder): void
@@ -280,13 +280,13 @@ final class SagaModule implements ServiceBusModule
         $listenerFactoryDefinition = (new Definition(DefaultEventListenerProcessorFactory::class))
             ->setArguments([new Reference(SagasStore::class)]);
 
-        $containerBuilder->addDefinitions([EventListenerProcessorFactory::class => $listenerFactoryDefinition]);
+        $containerBuilder->setDefinition(EventListenerProcessorFactory::class, $listenerFactoryDefinition);
 
         /** Configuration loader */
         $configurationLoaderDefinition = (new Definition(SagaAnnotationBasedConfigurationLoader::class))
             ->setArguments([new Reference(EventListenerProcessorFactory::class)]);
 
-        $containerBuilder->addDefinitions([SagaConfigurationLoader::class => $configurationLoaderDefinition]);
+        $containerBuilder->setDefinition(SagaConfigurationLoader::class, $configurationLoaderDefinition);
 
         $this->configurationLoaderServiceId = SagaConfigurationLoader::class;
     }
