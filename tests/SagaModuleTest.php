@@ -97,16 +97,16 @@ final class SagaModuleTest extends TestCase
         $configDefinition = (new Definition(StorageConfiguration::class))
             ->setArguments([\getenv('TEST_POSTGRES_DSN')]);
 
-        $this->containerBuilder->addDefinitions(['database_adapter_config' => $configDefinition]);
+        $this->containerBuilder->setDefinition('database_adapter_config', $configDefinition);
 
         $adapterDefinition = (new Definition(AmpPostgreSQLAdapter::class))
             ->setArguments([new Reference('database_adapter_config')]);
 
-        $this->containerBuilder->addDefinitions([AmpPostgreSQLAdapter::class => $adapterDefinition]);
+        $this->containerBuilder->setDefinition(AmpPostgreSQLAdapter::class, $adapterDefinition);
 
         $sagaStoreDefinition = new Definition(CustomSagaStore::class);
 
-        $this->containerBuilder->addDefinitions([CustomSagaStore::class => $sagaStoreDefinition]);
+        $this->containerBuilder->setDefinition(CustomSagaStore::class, $sagaStoreDefinition);
 
         SagaModule::withCustomStore(
             CustomSagaStore::class,
