@@ -36,7 +36,6 @@ final class SagaMessageExecutor implements MessageExecutor
      */
     public function __invoke(object $message, ServiceBusContext $context): Promise
     {
-        /** @psalm-suppress InvalidArgument */
         return call($this->messageHandler->closure, $message, $context);
     }
 }
