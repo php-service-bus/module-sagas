@@ -136,7 +136,6 @@ final class SagaModule implements ServiceBusModule
 
             if (null !== $class && true === \is_a($class, Saga::class, true))
             {
-                /** @psalm-var class-string<\ServiceBus\Sagas\Saga> $class */
                 $this->configureSaga($class);
             }
         }
