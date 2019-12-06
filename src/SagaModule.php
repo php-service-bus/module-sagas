@@ -52,7 +52,7 @@ final class SagaModule implements ServiceBusModule
     private $sagasToRegister = [];
 
     /** @var string|null */
-    private $configurationLoaderServiceId = null;
+    private $configurationLoaderServiceId;
 
     /**
      * @param string|null $configurationLoaderServiceId If not specified, the default annotation-based configurator
