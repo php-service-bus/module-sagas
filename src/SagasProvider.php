@@ -88,7 +88,6 @@ final class SagasProvider
             {
                 yield from $this->setupMutex($id);
 
-                /** @psalm-var class-string<\ServiceBus\Sagas\Saga> $sagaClass */
                 $sagaClass = $id->sagaClass;
 
                 $sagaMetaData = $this->extractSagaMetaData($sagaClass);
