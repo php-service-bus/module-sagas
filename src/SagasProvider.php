@@ -46,7 +46,7 @@ final class SagasProvider
      *
      * @psalm-var array<string, \ServiceBus\Sagas\Configuration\SagaMetadata>
      *
-     * @var \ServiceBus\Sagas\Configuration\SagaMetadata[]
+     * @var SagaMetadata[]
      */
     private $sagaMetaDataCollection = [];
 
