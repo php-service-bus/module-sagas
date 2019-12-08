@@ -254,7 +254,6 @@ final class SagasProvider
 
         $promises = [];
 
-        /** @var object $message */
         foreach ($messages as $message)
         {
             $promises[] = $context->delivery($message);
@@ -317,7 +316,6 @@ final class SagasProvider
     {
         $mutexKey = createMutexKey($id);
 
-        /** @var Lock|null $lock */
         $lock = $this->lockCollection[$mutexKey] ?? null;
 
         if (null !== $lock)
