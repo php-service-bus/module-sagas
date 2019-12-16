@@ -46,7 +46,7 @@ final class SagasProvider
      *
      * @psalm-var array<string, \ServiceBus\Sagas\Configuration\SagaMetadata>
      *
-     * @var \ServiceBus\Sagas\Configuration\SagaMetadata[]
+     * @var SagaMetadata[]
      */
     private $sagaMetaDataCollection = [];
 
@@ -83,13 +83,11 @@ final class SagasProvider
      */
     public function start(SagaId $id, object $command, ServiceBusContext $context): Promise
     {
-        /** @psalm-suppress InvalidArgument */
         return call(
             function (SagaId $id, object $command, ServiceBusContext $context): \Generator
             {
                 yield from $this->setupMutex($id);
 
-                /** @psalm-var class-string<\ServiceBus\Sagas\Saga> $sagaClass */
                 $sagaClass = $id->sagaClass;
 
                 $sagaMetaData = $this->extractSagaMetaData($sagaClass);
@@ -124,7 +122,6 @@ final class SagasProvider
      */
     public function obtain(SagaId $id, ServiceBusContext $context): Promise
     {
-        /** @psalm-suppress InvalidArgument */
         return call(
             function (SagaId $id, ServiceBusContext $context): \Generator
             {
@@ -173,7 +170,6 @@ final class SagasProvider
      */
     public function save(Saga $saga, ServiceBusContext $context): Promise
     {
-        /** @psalm-suppress InvalidArgument */
         return call(
             function (Saga $saga, ServiceBusContext $context): \Generator
             {
@@ -254,7 +250,6 @@ final class SagasProvider
 
         $promises = [];
 
-        /** @var object $message */
         foreach ($messages as $message)
         {
             $promises[] = $context->delivery($message);
@@ -317,7 +312,6 @@ final class SagasProvider
     {
         $mutexKey = createMutexKey($id);
 
-        /** @var Lock|null $lock */
         $lock = $this->lockCollection[$mutexKey] ?? null;
 
         if (null !== $lock)
