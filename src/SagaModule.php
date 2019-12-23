@@ -276,6 +276,11 @@ final class SagaModule implements ServiceBusModule
             return;
         }
 
+        if (true === $containerBuilder->hasDefinition(EventListenerProcessorFactory::class))
+        {
+            return;
+        }
+
         /** Event listener factory */
         $listenerFactoryDefinition = (new Definition(DefaultEventListenerProcessorFactory::class))
             ->setArguments([new Reference(SagasStore::class)]);
