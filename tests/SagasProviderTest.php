@@ -12,6 +12,7 @@ declare(strict_types = 1);
 
 namespace ServiceBus\Sagas\Module\Tests;
 
+use Amp\Loop;
 use function Amp\call;
 use function Amp\Promise\wait;
 use function ServiceBus\Common\writeReflectionPropertyValue;
@@ -111,13 +112,18 @@ final class SagasProviderTest extends TestCase
      *
      * @throws \Throwable
      */
-    public function updateNonexistentSaga(): \Generator
+    public function updateNonexistentSaga(): void
     {
-        $this->expectException(CantSaveUnStartedSaga::class);
+        Loop::run(
+            function (): \Generator
+            {
+                $this->expectException(CantSaveUnStartedSaga::class);
 
-        $testSaga = new TestSaga(TestSagaId::new(TestSaga::class));
+                $testSaga = new TestSaga(TestSagaId::new(TestSaga::class));
 
-        yield $this->sagaProvider->save($testSaga, new Context());
+                yield $this->sagaProvider->save($testSaga, new Context());
+            }
+        );
     }
 
     /**
@@ -125,13 +131,18 @@ final class SagasProviderTest extends TestCase
      *
      * @throws \Throwable
      */
-    public function startWithoutMetadata(): \Generator
+    public function startWithoutMetadata(): void
     {
-        $this->expectException(SagaMetaDataNotFound::class);
+        Loop::run(
+            function (): \Generator
+            {
+                $this->expectException(SagaMetaDataNotFound::class);
 
-        $id = TestSagaId::new(TestSaga::class);
+                $id = TestSagaId::new(TestSaga::class);
 
-        yield $this->sagaProvider->start($id, new TestCommand(), new Context());
+                yield $this->sagaProvider->start($id, new TestCommand(), new Context());
+            }
+        );
     }
 
     /**
@@ -139,18 +150,23 @@ final class SagasProviderTest extends TestCase
      *
      * @throws \Throwable
      */
-    public function start(): \Generator
+    public function start(): void
     {
-        $this->containerBuilder->get(Router::class);
+        Loop::run(
+            function (): \Generator
+            {
+                $this->containerBuilder->get(Router::class);
 
-        $id = TestSagaId::new(TestSaga::class);
+                $id = TestSagaId::new(TestSaga::class);
 
-        /** @var Saga $saga */
-        $saga = yield $this->sagaProvider->start($id, new TestCommand(), new Context());
+                /** @var Saga $saga */
+                $saga = yield $this->sagaProvider->start($id, new TestCommand(), new Context());
 
-        static::assertNotNull($saga);
-        static::assertInstanceOf(TestSaga::class, $saga);
-        static::assertSame($id, $saga->id());
+                static::assertNotNull($saga);
+                static::assertInstanceOf(TestSaga::class, $saga);
+                static::assertSame($id, $saga->id());
+            }
+        );
     }
 
     /**
@@ -160,72 +176,18 @@ final class SagasProviderTest extends TestCase
      */
     public function startDuplicate(): \Generator
     {
-        $this->expectException(DuplicateSaga::class);
+        Loop::run(
+            function (): \Generator
+            {
+                $this->expectException(DuplicateSaga::class);
 
-        $this->containerBuilder->get(Router::class);
+                $this->containerBuilder->get(Router::class);
 
-        $id = TestSagaId::new(TestSaga::class);
+                $id = TestSagaId::new(TestSaga::class);
 
-        yield $this->sagaProvider->start($id, new TestCommand(), new Context());
-        yield $this->sagaProvider->start($id, new TestCommand(), new Context());
-    }
-
-    /**
-     * @test
-     *
-     * @throws \Throwable
-     */
-    public function startWithoutSchema(): \Generator
-    {
-        $this->expectException(SagasStoreInteractionFailed::class);
-
-        yield $this->adapter->execute('DROP TABLE sagas_store');
-
-        $this->containerBuilder->get(Router::class);
-
-        yield $this->sagaProvider->start(TestSagaId::new(TestSaga::class), new TestCommand(), new Context());
-    }
-
-    /**
-     * @test
-     *
-     * @throws \Throwable
-     */
-    public function obtainWithoutSchema(): \Generator
-    {
-        $this->expectException(SagasStoreInteractionFailed::class);
-
-        $this->containerBuilder->get(Router::class);
-
-        yield $this->adapter->execute('DROP TABLE sagas_store');
-        yield $this->sagaProvider->obtain(TestSagaId::new(TestSaga::class), new Context());
-    }
-
-    /**
-     * @test
-     *
-     * @throws \Throwable
-     */
-    public function saveWithoutSchema(): \Generator
-    {
-        $this->expectException(SagasStoreInteractionFailed::class);
-
-        yield $this->adapter->execute('DROP TABLE sagas_store');
-
-        $testSaga = new TestSaga(TestSagaId::new(TestSaga::class));
-
-        yield $this->sagaProvider->save($testSaga, new Context());
-    }
-
-    /**
-     * @test
-     *
-     * @throws \Throwable
-     */
-    public function obtainNonexistentSaga(): \Generator
-    {
-        static::assertNull(
-            yield $this->sagaProvider->obtain(TestSagaId::new(TestSaga::class), new Context())
+                yield $this->sagaProvider->start($id, new TestCommand(), new Context());
+                yield $this->sagaProvider->start($id, new TestCommand(), new Context());
+            }
         );
     }
 
@@ -234,22 +196,20 @@ final class SagasProviderTest extends TestCase
      *
      * @throws \Throwable
      */
-    public function obtainExpiredSaga(): \Generator
+    public function startWithoutSchema(): void
     {
-        $this->expectException(LoadedExpiredSaga::class);
+        Loop::run(
+            function (): \Generator
+            {
+                $this->expectException(SagasStoreInteractionFailed::class);
 
-        $this->containerBuilder->get(Router::class);
+                yield $this->adapter->execute('DROP TABLE sagas_store');
 
-        $context = new Context();
-        $id      = TestSagaId::new(TestSaga::class);
+                $this->containerBuilder->get(Router::class);
 
-        /** @var Saga $saga */
-        $saga = yield $this->sagaProvider->start($id, new TestCommand(), $context);
-
-        writeReflectionPropertyValue($saga, 'expireDate', new \DateTimeImmutable('-1 hours'));
-
-        yield $this->sagaProvider->save($saga, $context);
-        yield $this->sagaProvider->obtain($id, $context);
+                yield $this->sagaProvider->start(TestSagaId::new(TestSaga::class), new TestCommand(), new Context());
+            }
+        );
     }
 
     /**
@@ -257,21 +217,112 @@ final class SagasProviderTest extends TestCase
      *
      * @throws \Throwable
      */
-    public function obtain(): \Generator
+    public function obtainWithoutSchema(): void
     {
-        $this->containerBuilder->get(Router::class);
+        Loop::run(
+            function (): \Generator
+            {
+                $this->expectException(SagasStoreInteractionFailed::class);
 
-        $context = new Context();
-        $id      = TestSagaId::new(TestSaga::class);
+                $this->containerBuilder->get(Router::class);
 
-        /** @var Saga $saga */
-        $saga = yield $this->sagaProvider->start($id, new TestCommand(), $context);
+                yield $this->adapter->execute('DROP TABLE sagas_store');
+                yield $this->sagaProvider->obtain(TestSagaId::new(TestSaga::class), new Context());
+            }
+        );
+    }
 
-        yield $this->sagaProvider->save($saga, $context);
+    /**
+     * @test
+     *
+     * @throws \Throwable
+     */
+    public function saveWithoutSchema(): void
+    {
+        Loop::run(
+            function (): \Generator
+            {
+                $this->expectException(SagasStoreInteractionFailed::class);
 
-        /** @var Saga $loadedSaga */
-        $loadedSaga = yield $this->sagaProvider->obtain($id, $context);
+                yield $this->adapter->execute('DROP TABLE sagas_store');
 
-        static::assertSame($saga->id()->id, $loadedSaga->id()->id);
+                $testSaga = new TestSaga(TestSagaId::new(TestSaga::class));
+
+                yield $this->sagaProvider->save($testSaga, new Context());
+            }
+        );
+    }
+
+    /**
+     * @test
+     *
+     * @throws \Throwable
+     */
+    public function obtainNonexistentSaga(): void
+    {
+        Loop::run(
+            function (): \Generator
+            {
+                static::assertNull(
+                    yield $this->sagaProvider->obtain(TestSagaId::new(TestSaga::class), new Context())
+                );
+            }
+        );
+    }
+
+    /**
+     * @test
+     *
+     * @throws \Throwable
+     */
+    public function obtainExpiredSaga(): void
+    {
+        Loop::run(
+            function (): \Generator
+            {
+                $this->expectException(LoadedExpiredSaga::class);
+
+                $this->containerBuilder->get(Router::class);
+
+                $context = new Context();
+                $id      = TestSagaId::new(TestSaga::class);
+
+                /** @var Saga $saga */
+                $saga = yield $this->sagaProvider->start($id, new TestCommand(), $context);
+
+                writeReflectionPropertyValue($saga, 'expireDate', new \DateTimeImmutable('-1 hours'));
+
+                yield $this->sagaProvider->save($saga, $context);
+                yield $this->sagaProvider->obtain($id, $context);
+            }
+        );
+    }
+
+    /**
+     * @test
+     *
+     * @throws \Throwable
+     */
+    public function obtain(): void
+    {
+        Loop::run(
+            function (): \Generator
+            {
+                $this->containerBuilder->get(Router::class);
+
+                $context = new Context();
+                $id      = TestSagaId::new(TestSaga::class);
+
+                /** @var Saga $saga */
+                $saga = yield $this->sagaProvider->start($id, new TestCommand(), $context);
+
+                yield $this->sagaProvider->save($saga, $context);
+
+                /** @var Saga $loadedSaga */
+                $loadedSaga = yield $this->sagaProvider->obtain($id, $context);
+
+                static::assertSame($saga->id()->id, $loadedSaga->id()->id);
+            }
+        );
     }
 }

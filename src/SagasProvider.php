@@ -84,7 +84,7 @@ final class SagasProvider
     public function start(SagaId $id, object $command, ServiceBusContext $context): Promise
     {
         return call(
-            function (SagaId $id, object $command, ServiceBusContext $context): \Generator
+            function () use ($id, $command, $context): \Generator
             {
                 yield from $this->setupMutex($id);
 
@@ -104,10 +104,7 @@ final class SagasProvider
                 unset($sagaClass, $sagaMetaData, $expireDate);
 
                 return $saga;
-            },
-            $id,
-            $command,
-            $context
+            }
         );
     }
 
@@ -123,7 +120,7 @@ final class SagasProvider
     public function obtain(SagaId $id, ServiceBusContext $context): Promise
     {
         return call(
-            function (SagaId $id, ServiceBusContext $context): \Generator
+            function () use ($id, $context): \Generator
             {
                 /** @var \DateTimeImmutable $currentDatetime */
                 $currentDatetime = datetimeInstantiator('NOW');
@@ -133,7 +130,7 @@ final class SagasProvider
                 /** @var Saga|null $saga */
                 $saga = yield $this->sagaStore->obtain($id);
 
-                if (null === $saga)
+                if ($saga === null)
                 {
                     yield from $this->releaseMutex($id);
 
@@ -155,9 +152,7 @@ final class SagasProvider
                 throw new LoadedExpiredSaga(
                     \sprintf('Unable to load the saga (ID: "%s") whose lifetime has expired', $id->toString())
                 );
-            },
-            $id,
-            $context
+            }
         );
     }
 
@@ -171,12 +166,12 @@ final class SagasProvider
     public function save(Saga $saga, ServiceBusContext $context): Promise
     {
         return call(
-            function (Saga $saga, ServiceBusContext $context): \Generator
+            function () use ($saga, $context): \Generator
             {
                 /** @var Saga|null $existsSaga */
                 $existsSaga = yield $this->sagaStore->obtain($saga->id());
 
-                if (null !== $existsSaga)
+                if ($existsSaga !== null)
                 {
                     yield from $this->doStore($saga, $context, false);
 
@@ -186,9 +181,7 @@ final class SagasProvider
                 }
 
                 throw CantSaveUnStartedSaga::create($saga);
-            },
-            $saga,
-            $context
+            }
         );
     }
 
@@ -204,7 +197,7 @@ final class SagasProvider
         /** @var \ServiceBus\Sagas\SagaStatus $currentStatus */
         $currentStatus = readReflectionPropertyValue($saga, 'status');
 
-        if (true === $currentStatus->inProgress())
+        if ($currentStatus->inProgress() === true)
         {
             invokeReflectionMethod($saga, 'makeExpired');
 
@@ -235,12 +228,9 @@ final class SagasProvider
          */
         $events = invokeReflectionMethod($saga, 'raisedEvents');
 
-        /** @var \Generator $generator */
-        $generator = true === $isNew
-            ? $this->sagaStore->save($saga)
-            : $this->sagaStore->update($saga);
-
-        yield $generator;
+        $isNew === true
+            ? yield $this->sagaStore->save($saga)
+            : yield $this->sagaStore->update($saga);
 
         /**
          * @var object[] $messages
@@ -256,6 +246,8 @@ final class SagasProvider
         }
 
         yield $promises;
+
+        unset($promises, $commands, $events);
 
         /** remove mutex */
         yield from $this->releaseMutex($saga->id());
@@ -296,12 +288,14 @@ final class SagasProvider
     {
         $mutexKey = createMutexKey($id);
 
-        if (false === \array_key_exists($mutexKey, $this->lockCollection))
+        if (\array_key_exists($mutexKey, $this->lockCollection) === false)
         {
             $mutex = $this->mutexFactory->create($mutexKey);
 
-            /** @psalm-suppress InvalidPropertyAssignmentValue */
-            $this->lockCollection[$mutexKey] = yield $mutex->acquire();
+            /** @var \ServiceBus\Mutex\Lock $lock */
+            $lock = yield $mutex->acquire();
+
+            $this->lockCollection[$mutexKey] = $lock;
         }
     }
 
@@ -314,7 +308,7 @@ final class SagasProvider
 
         $lock = $this->lockCollection[$mutexKey] ?? null;
 
-        if (null !== $lock)
+        if ($lock !== null)
         {
             unset($this->lockCollection[$mutexKey]);
 
