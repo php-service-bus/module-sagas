@@ -849,16 +849,16 @@
         },
         {
             "name": "php-service-bus/mutex",
-            "version": "v4.0.2",
+            "version": "v4.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-service-bus/mutex.git",
-                "reference": "9688de92bc29debe26c637e5e253c01a5599d0e7"
+                "reference": "ce1089c3e827545fb69e7b24331634a4e16d3c4a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-service-bus/mutex/zipball/9688de92bc29debe26c637e5e253c01a5599d0e7",
-                "reference": "9688de92bc29debe26c637e5e253c01a5599d0e7",
+                "url": "https://api.github.com/repos/php-service-bus/mutex/zipball/ce1089c3e827545fb69e7b24331634a4e16d3c4a",
+                "reference": "ce1089c3e827545fb69e7b24331634a4e16d3c4a",
                 "shasum": ""
             },
             "require": {
@@ -896,20 +896,20 @@
                 "command-bus",
                 "messaging"
             ],
-            "time": "2019-12-03T23:36:05+00:00"
+            "time": "2019-12-30T21:03:07+00:00"
         },
         {
             "name": "php-service-bus/sagas",
-            "version": "v4.0.3",
+            "version": "v4.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-service-bus/sagas.git",
-                "reference": "f7257463de1ba1f66e6cc9377df17f3fc95b2a88"
+                "reference": "c3218c47c0b4aad85007f077e951fab853698c10"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-service-bus/sagas/zipball/f7257463de1ba1f66e6cc9377df17f3fc95b2a88",
-                "reference": "f7257463de1ba1f66e6cc9377df17f3fc95b2a88",
+                "url": "https://api.github.com/repos/php-service-bus/sagas/zipball/c3218c47c0b4aad85007f077e951fab853698c10",
+                "reference": "c3218c47c0b4aad85007f077e951fab853698c10",
                 "shasum": ""
             },
             "require": {
@@ -956,7 +956,7 @@
                 "messaging",
                 "sagas"
             ],
-            "time": "2019-12-30T15:59:54+00:00"
+            "time": "2019-12-30T21:24:45+00:00"
         },
         {
             "name": "php-service-bus/storage-common",
@@ -2875,16 +2875,16 @@
         },
         {
             "name": "php-service-bus/storage-sql",
-            "version": "v4.0.3",
+            "version": "v4.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-service-bus/storage-sql.git",
-                "reference": "e53af60e6915434751c22a8404768168e745e5d6"
+                "reference": "647212166f1115fea4818881064c1fcf47d0a07a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-service-bus/storage-sql/zipball/e53af60e6915434751c22a8404768168e745e5d6",
-                "reference": "e53af60e6915434751c22a8404768168e745e5d6",
+                "url": "https://api.github.com/repos/php-service-bus/storage-sql/zipball/647212166f1115fea4818881064c1fcf47d0a07a",
+                "reference": "647212166f1115fea4818881064c1fcf47d0a07a",
                 "shasum": ""
             },
             "require": {
@@ -2933,7 +2933,7 @@
                 "postgresql",
                 "sql"
             ],
-            "time": "2019-12-30T15:03:19+00:00"
+            "time": "2019-12-30T18:48:50+00:00"
         },
         {
             "name": "phpdocumentor/reflection-common",

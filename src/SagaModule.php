@@ -13,6 +13,8 @@ declare(strict_types = 1);
 namespace ServiceBus\Sagas\Module;
 
 use ServiceBus\AnnotationsReader\Reader;
+use ServiceBus\Mutex\InMemoryLockCollection;
+use ServiceBus\Mutex\LockCollection;
 use function ServiceBus\Common\canonicalizeFilesPath;
 use function ServiceBus\Common\extractNamespaceFromFile;
 use function ServiceBus\Common\searchFiles;
@@ -177,11 +179,12 @@ final class SagaModule implements ServiceBusModule
     {
         $containerBuilder->setParameter('service_bus.sagas.list', $this->sagasToRegister);
 
+        $this->registerMutexCollection($containerBuilder);
         $this->registerSagaStore($containerBuilder);
         $this->registerMutexFactory($containerBuilder);
         $this->registerSagasProvider($containerBuilder);
 
-        if (null === $this->configurationLoaderServiceId)
+        if ($this->configurationLoaderServiceId === null)
         {
             $this->registerDefaultConfigurationLoader($containerBuilder);
 
@@ -191,12 +194,17 @@ final class SagaModule implements ServiceBusModule
         $this->registerRoutesConfigurator($containerBuilder);
     }
 
-    /**
-     * @param ContainerBuilder $containerBuilder
-     */
+    private function registerMutexCollection(ContainerBuilder $containerBuilder): void
+    {
+        if ($containerBuilder->hasDefinition(LockCollection::class) === false)
+        {
+            $containerBuilder->setDefinition(LockCollection::class, new Definition(InMemoryLockCollection::class));
+        }
+    }
+
     private function registerMutexFactory(ContainerBuilder $containerBuilder): void
     {
-        if (false === $containerBuilder->hasDefinition(MutexFactory::class))
+        if ($containerBuilder->hasDefinition(MutexFactory::class) === false)
         {
             $containerBuilder->setDefinition(MutexFactory::class, new Definition(InMemoryMutexFactory::class));
         }
@@ -204,14 +212,14 @@ final class SagaModule implements ServiceBusModule
 
     private function registerRoutesConfigurator(ContainerBuilder $containerBuilder): void
     {
-        if (false === $containerBuilder->hasDefinition(ChainRouterConfigurator::class))
+        if ($containerBuilder->hasDefinition(ChainRouterConfigurator::class) === false)
         {
             $containerBuilder->setDefinition(ChainRouterConfigurator::class, new Definition(ChainRouterConfigurator::class));
         }
 
         $routerConfiguratorDefinition = $containerBuilder->getDefinition(ChainRouterConfigurator::class);
 
-        if (false === $containerBuilder->hasDefinition(Router::class))
+        if ($containerBuilder->hasDefinition(Router::class) === false)
         {
             $containerBuilder->setDefinition(Router::class, new Definition(Router::class));
         }
@@ -251,7 +259,7 @@ final class SagaModule implements ServiceBusModule
 
     private function registerSagaStore(ContainerBuilder $containerBuilder): void
     {
-        if (true === $containerBuilder->hasDefinition(SagasStore::class))
+        if ($containerBuilder->hasDefinition(SagasStore::class) === true)
         {
             return;
         }
@@ -264,12 +272,12 @@ final class SagaModule implements ServiceBusModule
 
     private function registerDefaultConfigurationLoader(ContainerBuilder $containerBuilder): void
     {
-        if (true === $containerBuilder->hasDefinition(SagaConfigurationLoader::class))
+        if ($containerBuilder->hasDefinition(SagaConfigurationLoader::class) === true)
         {
             return;
         }
 
-        if (true === $containerBuilder->hasDefinition(EventListenerProcessorFactory::class))
+        if ($containerBuilder->hasDefinition(EventListenerProcessorFactory::class) === true)
         {
             return;
         }
