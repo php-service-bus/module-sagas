@@ -251,6 +251,7 @@ final class SagaModule implements ServiceBusModule
                 [
                     new Reference(SagasStore::class),
                     new Reference(MutexFactory::class),
+                    new Reference(LockCollection::class)
                 ]
             );
 
