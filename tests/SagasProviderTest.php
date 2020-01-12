@@ -13,7 +13,6 @@ declare(strict_types = 1);
 namespace ServiceBus\Sagas\Module\Tests;
 
 use Amp\Loop;
-use function Amp\call;
 use function Amp\Promise\wait;
 use function ServiceBus\Common\writeReflectionPropertyValue;
 use PHPUnit\Framework\TestCase;
@@ -174,7 +173,7 @@ final class SagasProviderTest extends TestCase
      *
      * @throws \Throwable
      */
-    public function startDuplicate(): \Generator
+    public function startDuplicate(): void
     {
         Loop::run(
             function (): \Generator
