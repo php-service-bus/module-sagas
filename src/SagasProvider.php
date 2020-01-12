@@ -12,8 +12,7 @@ declare(strict_types = 1);
 
 namespace ServiceBus\Sagas\Module;
 
-use ServiceBus\Mutex\InMemoryLockCollection;
-use ServiceBus\Mutex\LockCollection;
+use ServiceBus\Mutex\InMemory\InMemoryMutexFactory;
 use function Amp\call;
 use function ServiceBus\Common\datetimeInstantiator;
 use function ServiceBus\Common\invokeReflectionMethod;
@@ -21,7 +20,6 @@ use function ServiceBus\Common\readReflectionPropertyValue;
 use function ServiceBus\Sagas\createMutexKey;
 use Amp\Promise;
 use ServiceBus\Common\Context\ServiceBusContext;
-use ServiceBus\Mutex\InMemoryMutexFactory;
 use ServiceBus\Mutex\Lock;
 use ServiceBus\Mutex\MutexFactory;
 use ServiceBus\Sagas\Configuration\SagaMetadata;
@@ -52,17 +50,13 @@ final class SagasProvider
      */
     private $sagaMetaDataCollection = [];
 
-    /** @var LockCollection */
-    private $lockCollection;
+    /** @var Lock[] */
+    private $lockCollection = [];
 
-    public function __construct(
-        SagasStore $sagaStore,
-        ?MutexFactory $mutexFactory = null,
-        ?LockCollection $lockCollection = null
-    ) {
-        $this->sagaStore      = $sagaStore;
-        $this->mutexFactory   = $mutexFactory ?? new InMemoryMutexFactory();
-        $this->lockCollection = $lockCollection ?? new InMemoryLockCollection();
+    public function __construct(SagasStore $sagaStore, ?MutexFactory $mutexFactory = null)
+    {
+        $this->sagaStore    = $sagaStore;
+        $this->mutexFactory = $mutexFactory ?? new InMemoryMutexFactory();
     }
 
     public function __destruct()
@@ -290,17 +284,14 @@ final class SagasProvider
     {
         $mutexKey = createMutexKey($id);
 
-        /** @var bool $hasLock */
-        $hasLock = yield $this->lockCollection->has($mutexKey);
-
-        if ($hasLock === false)
+        if (\array_key_exists($mutexKey, $this->lockCollection) === false)
         {
             $mutex = $this->mutexFactory->create($mutexKey);
 
-            /** @var \ServiceBus\Mutex\Lock $lock */
+            /** @var Lock $lock */
             $lock = yield $mutex->acquire();
 
-            yield $this->lockCollection->place($mutexKey, $lock);
+            $this->lockCollection[$mutexKey] = $lock;
         }
     }
 
@@ -311,11 +302,13 @@ final class SagasProvider
     {
         $mutexKey = createMutexKey($id);
 
-        /** @var Lock|null $lock */
-        $lock = yield $this->lockCollection->extract($mutexKey);
-
-        if ($lock !== null)
+        if (\array_key_exists($mutexKey, $this->lockCollection) === true)
         {
+            /** @var Lock $lock */
+            $lock = $this->lockCollection[$mutexKey];
+
+            unset($this->lockCollection[$mutexKey]);
+
             yield $lock->release();
         }
     }

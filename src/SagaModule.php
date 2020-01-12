@@ -13,15 +13,13 @@ declare(strict_types = 1);
 namespace ServiceBus\Sagas\Module;
 
 use ServiceBus\AnnotationsReader\Reader;
-use ServiceBus\Mutex\InMemoryLockCollection;
-use ServiceBus\Mutex\LockCollection;
+use ServiceBus\Mutex\InMemory\InMemoryMutexFactory;
 use function ServiceBus\Common\canonicalizeFilesPath;
 use function ServiceBus\Common\extractNamespaceFromFile;
 use function ServiceBus\Common\searchFiles;
 use ServiceBus\Common\Module\ServiceBusModule;
 use ServiceBus\MessagesRouter\ChainRouterConfigurator;
 use ServiceBus\MessagesRouter\Router;
-use ServiceBus\Mutex\InMemoryMutexFactory;
 use ServiceBus\Mutex\MutexFactory;
 use ServiceBus\Sagas\Configuration\Annotations\SagaAnnotationBasedConfigurationLoader;
 use ServiceBus\Sagas\Configuration\DefaultEventListenerProcessorFactory;
@@ -179,7 +177,6 @@ final class SagaModule implements ServiceBusModule
     {
         $containerBuilder->setParameter('service_bus.sagas.list', $this->sagasToRegister);
 
-        $this->registerMutexCollection($containerBuilder);
         $this->registerSagaStore($containerBuilder);
         $this->registerMutexFactory($containerBuilder);
         $this->registerSagasProvider($containerBuilder);
@@ -192,14 +189,6 @@ final class SagaModule implements ServiceBusModule
         }
 
         $this->registerRoutesConfigurator($containerBuilder);
-    }
-
-    private function registerMutexCollection(ContainerBuilder $containerBuilder): void
-    {
-        if ($containerBuilder->hasDefinition(LockCollection::class) === false)
-        {
-            $containerBuilder->setDefinition(LockCollection::class, new Definition(InMemoryLockCollection::class));
-        }
     }
 
     private function registerMutexFactory(ContainerBuilder $containerBuilder): void
@@ -250,8 +239,7 @@ final class SagaModule implements ServiceBusModule
             ->setArguments(
                 [
                     new Reference(SagasStore::class),
-                    new Reference(MutexFactory::class),
-                    new Reference(LockCollection::class)
+                    new Reference(MutexFactory::class)
                 ]
             );
 
