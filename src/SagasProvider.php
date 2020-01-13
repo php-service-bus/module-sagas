@@ -147,8 +147,6 @@ final class SagasProvider
                 /** Non-expired saga */
                 if ($saga->expireDate() > now())
                 {
-                    unset($currentDatetime);
-
                     return $saga;
                 }
 
