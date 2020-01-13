@@ -16,6 +16,7 @@ use ServiceBus\Mutex\InMemory\InMemoryMutexFactory;
 use function Amp\call;
 use function ServiceBus\Common\datetimeInstantiator;
 use function ServiceBus\Common\invokeReflectionMethod;
+use function ServiceBus\Common\now;
 use function ServiceBus\Common\readReflectionPropertyValue;
 use function ServiceBus\Sagas\createMutexKey;
 use Amp\Promise;
@@ -122,9 +123,6 @@ final class SagasProvider
         return call(
             function () use ($id, $context): \Generator
             {
-                /** @var \DateTimeImmutable $currentDatetime */
-                $currentDatetime = datetimeInstantiator('NOW');
-
                 yield from $this->setupMutex($id);
 
                 try
@@ -147,7 +145,7 @@ final class SagasProvider
                 }
 
                 /** Non-expired saga */
-                if ($saga->expireDate() > $currentDatetime)
+                if ($saga->expireDate() > now())
                 {
                     unset($currentDatetime);
 
