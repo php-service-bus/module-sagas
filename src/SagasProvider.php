@@ -81,22 +81,29 @@ final class SagasProvider
             {
                 yield from $this->setupMutex($id);
 
-                $sagaClass = $id->sagaClass;
+                try
+                {
+                    $sagaClass = $id->sagaClass;
 
-                $sagaMetaData = $this->extractSagaMetaData($sagaClass);
+                    $sagaMetaData = $this->extractSagaMetaData($sagaClass);
 
-                /** @var \DateTimeImmutable $expireDate */
-                $expireDate = datetimeInstantiator($sagaMetaData->expireDateModifier);
+                    /** @var \DateTimeImmutable $expireDate */
+                    $expireDate = datetimeInstantiator($sagaMetaData->expireDateModifier);
 
-                /** @var Saga $saga */
-                $saga = new $sagaClass($id, $expireDate);
-                $saga->start($command);
+                    /** @var Saga $saga */
+                    $saga = new $sagaClass($id, $expireDate);
+                    $saga->start($command);
 
-                yield from $this->doStore($saga, $context, true);
+                    yield from $this->doStore($saga, $context, true);
 
-                unset($sagaClass, $sagaMetaData, $expireDate);
+                    unset($sagaClass, $sagaMetaData, $expireDate);
 
-                return $saga;
+                    return $saga;
+                }
+                finally
+                {
+                    yield from $this->releaseMutex($id);
+                }
             }
         );
     }
@@ -120,8 +127,17 @@ final class SagasProvider
 
                 yield from $this->setupMutex($id);
 
-                /** @var Saga|null $saga */
-                $saga = yield $this->sagaStore->obtain($id);
+                try
+                {
+                    /** @var Saga|null $saga */
+                    $saga = yield $this->sagaStore->obtain($id);
+                }
+                catch (\Throwable $throwable)
+                {
+                    yield from $this->releaseMutex($id);
+
+                    throw $throwable;
+                }
 
                 if ($saga === null)
                 {
@@ -161,19 +177,30 @@ final class SagasProvider
         return call(
             function () use ($saga, $context): \Generator
             {
-                /** @var Saga|null $existsSaga */
-                $existsSaga = yield $this->sagaStore->obtain($saga->id());
-
-                if ($existsSaga !== null)
+                try
                 {
-                    yield from $this->doStore($saga, $context, false);
+                    /** @var Saga|null $existsSaga */
+                    $existsSaga = yield $this->sagaStore->obtain($saga->id());
 
-                    unset($existsSaga);
+                    if ($existsSaga !== null)
+                    {
+                        /** The saga has not been updated */
+                        if ($existsSaga->stateHash() !== $saga->stateHash())
+                        {
+                            yield from $this->doStore($saga, $context, false);
+                        }
 
-                    return;
+                        unset($existsSaga);
+
+                        return;
+                    }
+
+                    throw CantSaveUnStartedSaga::create($saga);
                 }
-
-                throw CantSaveUnStartedSaga::create($saga);
+                finally
+                {
+                    yield from $this->releaseMutex($saga->id());
+                }
             }
         );
     }
@@ -244,9 +271,6 @@ final class SagasProvider
         }
 
         unset($promises, $commands, $events);
-
-        /** remove mutex */
-        yield from $this->releaseMutex($saga->id());
     }
 
     /**
@@ -270,7 +294,7 @@ final class SagasProvider
      *
      * @noinspection PhpUnusedPrivateMethodInspection
      *
-     * @see          SagaMessagesRouterConfigurator::registerRoutes
+     * @see SagaMessagesRouterConfigurator::configure
      */
     private function appendMetaData(string $sagaClass, SagaMetadata $metadata): void
     {
@@ -284,15 +308,12 @@ final class SagasProvider
     {
         $mutexKey = createMutexKey($id);
 
-        if (\array_key_exists($mutexKey, $this->lockCollection) === false)
-        {
-            $mutex = $this->mutexFactory->create($mutexKey);
+        $mutex = $this->mutexFactory->create($mutexKey);
 
-            /** @var Lock $lock */
-            $lock = yield $mutex->acquire();
+        /** @var Lock $lock */
+        $lock = yield $mutex->acquire();
 
-            $this->lockCollection[$mutexKey] = $lock;
-        }
+        $this->lockCollection[$mutexKey] = $lock;
     }
 
     /**
