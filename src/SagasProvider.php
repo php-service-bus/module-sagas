@@ -12,6 +12,7 @@ declare(strict_types = 1);
 
 namespace ServiceBus\Sagas\Module;
 
+use Amp\Success;
 use ServiceBus\Mutex\InMemory\InMemoryMutexFactory;
 use function Amp\call;
 use function ServiceBus\Common\datetimeInstantiator;
@@ -84,15 +85,13 @@ final class SagasProvider
 
                 try
                 {
-                    $sagaClass = $id->sagaClass;
-
-                    $sagaMetaData = $this->extractSagaMetaData($sagaClass);
+                    $sagaMetaData = $this->extractSagaMetaData($id->sagaClass);
 
                     /** @var \DateTimeImmutable $expireDate */
                     $expireDate = datetimeInstantiator($sagaMetaData->expireDateModifier);
 
                     /** @var Saga $saga */
-                    $saga = new $sagaClass($id, $expireDate);
+                    $saga = new $id->sagaClass($id, $expireDate);
                     $saga->start($command);
 
                     yield from $this->doStore($saga, $context, true);
@@ -141,7 +140,7 @@ final class SagasProvider
                 {
                     yield from $this->releaseMutex($id);
 
-                    return null;
+                    return yield (new Success(null));
                 }
 
                 /** Non-expired saga */
@@ -231,28 +230,15 @@ final class SagasProvider
     private function doStore(Saga $saga, ServiceBusContext $context, bool $isNew): \Generator
     {
         /**
-         * @psalm-var    array<int, object> $commands
+         * @psalm-var  array<int, object> $messages
          *
-         * @var object[] $commands
+         * @var object[] $messages
          */
-        $commands = invokeReflectionMethod($saga, 'firedCommands');
-
-        /**
-         * @psalm-var    array<int, object> $events
-         *
-         * @var object[] $events
-         */
-        $events = invokeReflectionMethod($saga, 'raisedEvents');
+        $messages = invokeReflectionMethod($saga, 'messages');
 
         $isNew === true
             ? yield $this->sagaStore->save($saga)
             : yield $this->sagaStore->update($saga);
-
-        /**
-         * @var object[] $messages
-         * @psalm-var array<array-key, object> $messages
-         */
-        $messages = \array_merge($commands, $events);
 
         $promises = [];
 
@@ -276,7 +262,7 @@ final class SagasProvider
      */
     private function extractSagaMetaData(string $sagaClass): SagaMetadata
     {
-        if (true === isset($this->sagaMetaDataCollection[$sagaClass]))
+        if (isset($this->sagaMetaDataCollection[$sagaClass]) === true)
         {
             return $this->sagaMetaDataCollection[$sagaClass];
         }
@@ -290,7 +276,7 @@ final class SagasProvider
      *
      * @noinspection PhpUnusedPrivateMethodInspection
      *
-     * @see SagaMessagesRouterConfigurator::configure
+     * @see          SagaMessagesRouterConfigurator::configure
      */
     private function appendMetaData(string $sagaClass, SagaMetadata $metadata): void
     {

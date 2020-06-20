@@ -35,14 +35,14 @@
   },
   "require": {
     "php": ">=7.3",
-    "php-service-bus/sagas": "v4.0.*",
-    "php-service-bus/annotations-reader": "v4.0.*",
-    "php-service-bus/messages-router": "v4.0.*"
+    "php-service-bus/sagas": "v4.1.*",
+    "php-service-bus/annotations-reader": "v4.1.*",
+    "php-service-bus/messages-router": "v4.1.*",
+    "php-service-bus/storage": "v4.1.*"
   },
   "require-dev": {
     "php-service-bus/code-style-config": "v1.2.*",
-    "php-service-bus/storage-sql": "v4.0.*",
-    "symfony/dependency-injection": "v5.0.*",
+    "symfony/dependency-injection": "v5.1.*",
     "doctrine/dbal": "v2.10.*",
     "phpunit/phpunit": "v8.4.*",
     "vimeo/psalm": "v3.7.*",

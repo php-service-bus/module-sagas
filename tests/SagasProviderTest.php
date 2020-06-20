@@ -35,6 +35,8 @@ use ServiceBus\Storage\Sql\DoctrineDBAL\DoctrineDBALAdapter;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
+use function ServiceBus\Storage\Sql\equalsCriteria;
+use function ServiceBus\Storage\Sql\updateQuery;
 
 /**
  *
@@ -289,7 +291,14 @@ final class SagasProviderTest extends TestCase
                 /** @var Saga $saga */
                 $saga = yield $this->sagaProvider->start($id, new TestCommand(), $context);
 
-                writeReflectionPropertyValue($saga, 'expireDate', new \DateTimeImmutable('-1 hours'));
+                $query = updateQuery(
+                    'sagas_store',
+                    ['expiration_date' => \date('c', \strtotime('-1 hour'))]
+                )
+                    ->where(equalsCriteria("id", $id->id))
+                    ->compile();
+
+                yield $this->adapter->execute($query->sql(), $query->params());
 
                 yield $this->sagaProvider->save($saga, $context);
                 yield $this->sagaProvider->obtain($id, $context);
