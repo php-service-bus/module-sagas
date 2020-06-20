@@ -69,7 +69,7 @@ final class SagasProvider
     /**
      * Start a new saga.
      *
-     * Returns \ServiceBus\Sagas\Saga
+     * @return Promise<\ServiceBus\Sagas\Saga|null>
      *
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagasStoreInteractionFailed Database interaction error
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagaSerializationError Error while serializing saga
@@ -96,8 +96,6 @@ final class SagasProvider
 
                     yield from $this->doStore($saga, $context, true);
 
-                    unset($sagaClass, $sagaMetaData, $expireDate);
-
                     return $saga;
                 }
                 finally
@@ -111,7 +109,7 @@ final class SagasProvider
     /**
      * Load saga.
      *
-     * Returns \ServiceBus\Sagas\Saga|null
+     * @return Promise<\ServiceBus\Sagas\Saga|null>
      *
      * @throws \ServiceBus\Sagas\Store\Exceptions\LoadedExpiredSaga Expired saga loaded
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagasStoreInteractionFailed Database interaction error
@@ -136,32 +134,30 @@ final class SagasProvider
                     throw $throwable;
                 }
 
-                if ($saga === null)
+                if ($saga !== null)
                 {
-                    yield from $this->releaseMutex($id);
+                    /** Non-expired saga */
+                    if ($saga->expireDate() > now())
+                    {
+                        return $saga;
+                    }
 
-                    return yield (new Success(null));
+                    yield from $this->doCloseExpired($saga, $context);
+
+                    throw new LoadedExpiredSaga(
+                        \sprintf('Unable to load the saga (ID: "%s") whose lifetime has expired', $id->toString())
+                    );
                 }
 
-                /** Non-expired saga */
-                if ($saga->expireDate() > now())
-                {
-                    return $saga;
-                }
-
-                yield from $this->doCloseExpired($saga, $context);
-
-                unset($saga);
-
-                throw new LoadedExpiredSaga(
-                    \sprintf('Unable to load the saga (ID: "%s") whose lifetime has expired', $id->toString())
-                );
+                yield from $this->releaseMutex($id);
             }
         );
     }
 
     /**
      * Save\update a saga.
+     *
+     * @return Promise<void>
      *
      * @throws \ServiceBus\Sagas\Module\Exceptions\CantSaveUnStartedSaga Attempt to save un-started saga
      * @throws \ServiceBus\Sagas\Store\Exceptions\SagasStoreInteractionFailed Database interaction error
@@ -184,8 +180,6 @@ final class SagasProvider
                         {
                             yield from $this->doStore($saga, $context, false);
                         }
-
-                        unset($existsSaga);
 
                         return;
                     }
@@ -251,8 +245,6 @@ final class SagasProvider
         {
             yield $promises;
         }
-
-        unset($promises, $commands, $events);
     }
 
     /**
